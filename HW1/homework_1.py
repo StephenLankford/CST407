@@ -20,3 +20,12 @@ def sanitize_input(raw):
 	return raw
 	
 #def user_choice(user_input):
+
+#open filepicker dialog box
+import tkinter as tk
+from tkinter import filedialog
+
+root = tk.Tk()
+root.withdraw()
+
+file_path = filedialog.askopenfilename()
