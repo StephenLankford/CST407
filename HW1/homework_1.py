@@ -20,7 +20,7 @@ while user_input != "quit": #stay in the loop until quit is ran
 	raw_input = input("\nEnter selection: ")
 	user_input = sanitize_input(raw_input) #make sure the input is valid
 	if user_input != "quit":
-		action(raw_input)
+		action(user_input)
 
 	
 #def user_choice(user_input):
