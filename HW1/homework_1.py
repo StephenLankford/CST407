@@ -24,8 +24,7 @@ def action(selection):
 	if selection == "encrypt":
 		encrypt()
 	elif selection == "decrypt":
-		user_key = input("Enter a valid key. A key can be a letter, base 10 number, or a sentence: ")
-		caesar_cipher_table(user_key)
+		decrypt()
 	elif selection == "help":
 		help_screen()
 	else:
@@ -59,7 +58,7 @@ def caesar_cipher_table(key):
 			if (valid_num ^ valid_str):
 				if (valid_num):
 					cipher_number = int(key) % 26
-					temp_str = base_table[0:cipher_number - 1]
+					temp_str = base_table[0:cipher_number]
 					cipher = base_table[cipher_number: ]
 					cipher = (cipher + temp_str).upper()
 					valid = True
@@ -97,6 +96,7 @@ def encrypt():
 		elif (letter.isalpha()):						#end of file not detected yet
 			change = ord(letter.upper())	#find ascii value of lowercase char
 			#print(change - 65)
+			#print(finalString)
 			finalString += cipher[change - 65]
 		else:
 			finalString += letter
@@ -109,7 +109,38 @@ def encrypt():
 	
 #########################################################	Decryption	 #################################################
 def decrypt():
-	print("Enter a key: ")
+	key = input("Enter the encryption key (character, string, or integer): ")
+
+	cipher = caesar_cipher_table(key)
+
+	#open filepicker dialog box
+	root = tk.Tk()
+	root.withdraw()
+
+	filePath = filedialog.askopenfilename()
+	fileSize = Path(filePath).stat().st_size
+	toDecrypt = open(filePath, "r")
+
+	endOfFile = False
+	finalString = ""
+
+	while(not endOfFile):
+		letter = toDecrypt.read(1)	#read one character at a time
+		if letter == '':				#no character read
+			endOfFile = True		#end of file
+		elif (letter.isalpha()):						#end of file not detected yet
+			change = ord(letter.lower())	#find ascii value of lowercase char
+			#print(change - 65)
+			#print(finalString)
+			finalString += base_table[cipher[change - 97]]
+		else:
+			finalString += letter
+	
+	ciphertext = open("DecryptedMessage.txt", "w")
+	filename = ciphertext.name
+	ciphertext.write(finalString)
+	ciphertext.close()
+	os.system(filename)
 	
 #########################################################	Help	 #################################################		
 def help_screen():
