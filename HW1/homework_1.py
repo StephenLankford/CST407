@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 from pathlib import Path
 from collections import OrderedDict
+import os
 
 #########################################################	Global Variables	 #################################################	
 user_input = ""
@@ -84,25 +85,28 @@ def encrypt():
 
 	filePath = filedialog.askopenfilename()
 	fileSize = Path(filePath).stat().st_size
-	toEncrypt = open("file_path", "r")
+	toEncrypt = open(filePath, "r")
 
-	endOfFile = True
+	endOfFile = False
 	finalString = ""
 
-	while(endOfFile):
-		char = toEncrypt.read(1)	#read one character at a time
-		if char == '':				#no character read
-			endOfFile = False		#end of file
-		elif (char.isalpha()):						#end of file not detected yet
-			change = ord(char.upper)	#find ascii value of lowercase char
+	while(not endOfFile):
+		letter = toEncrypt.read(1)	#read one character at a time
+		if letter == '':				#no character read
+			endOfFile = True		#end of file
+		elif (letter.isalpha()):						#end of file not detected yet
+			change = ord(letter.upper())	#find ascii value of lowercase char
+			#print(change - 65)
 			finalString += cipher[change - 65]
 		else:
-			finalString += char
-
+			finalString += letter
+	
 	ciphertext = open("EncryptedMessage.txt", "w")
+	filename = ciphertext.name
 	ciphertext.write(finalString)
 	ciphertext.close()
-
+	os.system(filename)
+	
 #########################################################	Decryption	 #################################################
 def decrypt():
 	print("Enter a key: ")
