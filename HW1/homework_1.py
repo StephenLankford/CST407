@@ -64,7 +64,7 @@ def caesar_cipher_table(key):
 					valid = True
 				else:
 					cipher = key + base_table
-					cipher = ("".join(OrderedDict.fromkeys(cipher))).upper()
+					cipher = ("".join(OrderedDict.fromkeys(cipher))).upper() # joins characters together with "", puts them in an ordered dictionary using the cipher, uppercases it
 					valid = True
 		if valid == False:
 			print("Invalid key entered. A key can be a letter, a base 10 number, or a sentence.\n")
@@ -83,7 +83,7 @@ def encrypt():
 	root.withdraw()
 
 	filePath = filedialog.askopenfilename()
-	fileSize = Path(file_path).stat().st_size
+	fileSize = Path(filePath).stat().st_size
 	toEncrypt = open("file_path", "r")
 
 	endOfFile = True
@@ -94,8 +94,8 @@ def encrypt():
 		if char == '':				#no character read
 			endOfFile = False		#end of file
 		elif (char.isalpha()):						#end of file not detected yet
-			change = ord(char.lower)	#find ascii value of lowercase char
-			finalString += cipher[change - 97]
+			change = ord(char.upper)	#find ascii value of lowercase char
+			finalString += cipher[change - 65]
 		else:
 			finalString += char
 
