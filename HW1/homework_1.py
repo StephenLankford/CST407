@@ -1,6 +1,6 @@
 ################################################################################################################################
 #	Authors: Hayden Hutsell and Stephen Lankford
-#	Title: HIST452 - HW1 - Caesar Cipher
+#	Title: CST407 - HW1 - Caesar Cipher
 #	Date: 06/23/2020
 #	Revision History: 06/29/2020 - added some documentation, fixed and made file open more efficient, fixed decrypt function
 #	Summary: Caesar Cipher Encrypt and Decrypt program. Asks for user input in the menu, then requires user input of cipher key,
