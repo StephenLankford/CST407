@@ -79,6 +79,8 @@ def statistical():
         else:
             finalString += letter
 
+    #analysis and swap code here
+
     ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
     filename = ciphertext.name	
     ciphertext.write(finalString)
@@ -87,16 +89,15 @@ def statistical():
 #########################################################	Help	 #################################################		
 def help_screen():
 	print("The menu options are help, quit, encrypt, and decrypt - type your selection and hit 'Enter'.")
-	print("When 'encrypt' or 'decrypt' are entered, type the key, then a file picker dialog box will appear.")
-	print("The encrypt/decrypt key can be a decimal integer, letter, or a sentence.")
-	print("When a File Open dialog box appears after selecting 'Encrypt', navigate to and select the text file to be encrypted.")
-	print("When a File Open dialog box appears after selecting 'Decrypt', navigate to and select the encrypted message to be revealed.")
+	print("When 'dictionary' or 'statistical' are entered, type the key, then a file picker dialog box will appear.")
+	print("When a File Open dialog box appears after selecting 'dictionary', navigate to and select the text file to be encrypted.")
+	print("When a File Open dialog box appears after selecting 'statistical', navigate to and select the encrypted message to be revealed.")
 
 #########################################################	Main	 #################################################	
-print("This program will encrypt and decrypt a file made up of english words.\n\n\
+print("This program will attempt to crack a caesar cipher.\n\n\
 for help, type help.\n\
-for encrypting, type encrypt\n\
-for decrypting, type decrypt\n\
+for dictionary attack, type dictionary\n\
+for statistical analysis, type analysis\n\
 to quit, type quit.")
 
 while user_input != "quit": #stay in the loop until quit is ran
