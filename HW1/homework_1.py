@@ -1,6 +1,16 @@
+################################################################################################################################
+#	Authors: Hayden Hutsell and Stephen Lankford
+#	Title: HIST452 - HW1 - Caesar Cipher
+#	Date: 06/23/2020
+#	Revision History: 06/29/2020 - added some documentation, fixed and made file open more efficient, fixed decrypt function
+#	Summary: Caesar Cipher Encrypt and Decrypt program. Asks for user input in the menu, then requires user input of cipher key,
+#			 then plaintext file selection.
+################################################################################################################################
+
 import sys
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import *
 from pathlib import Path
 from collections import OrderedDict
 import os
@@ -79,12 +89,8 @@ def encrypt():
 	cipher = caesar_cipher_table(key)
 
 	#open filepicker dialog box
-	root = tk.Tk()
-	root.withdraw()
-
-	filePath = filedialog.askopenfilename()
-	fileSize = Path(filePath).stat().st_size
-	toEncrypt = open(filePath, "r")
+	filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
+	toEncrypt = open(filePath, "r")		#open as read only
 
 	endOfFile = False
 	finalString = ""
@@ -95,14 +101,14 @@ def encrypt():
 			endOfFile = True		#end of file
 		elif (letter.isalpha()):						#end of file not detected yet
 			change = ord(letter.upper())	#find ascii value of lowercase char
-			#print(change - 65)
-			#print(finalString)
-			finalString += cipher[change - 65]
+			# print(change - 65)
+			# print(finalString)
+			finalString += cipher[change - 65]	#convert plaintext to ciphertext based on ascii mod 26
 		else:
 			finalString += letter
 	
-	ciphertext = open("EncryptedMessage.txt", "w")
-	filename = ciphertext.name
+	ciphertext = open("EncryptedMessage.txt", "w")		#save the encrypted message as a text file in the same location as this program
+	filename = ciphertext.name	
 	ciphertext.write(finalString)
 	ciphertext.close()
 	os.system(filename)
@@ -114,12 +120,8 @@ def decrypt():
 	cipher = caesar_cipher_table(key)
 
 	#open filepicker dialog box
-	root = tk.Tk()
-	root.withdraw()
-
-	filePath = filedialog.askopenfilename()
-	fileSize = Path(filePath).stat().st_size
-	toDecrypt = open(filePath, "r")
+	filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
+	toDecrypt = open(filePath, "r")		#open as read only
 
 	endOfFile = False
 	finalString = ""
@@ -132,11 +134,12 @@ def decrypt():
 			change = ord(letter.lower())	#find ascii value of lowercase char
 			#print(change - 65)
 			#print(finalString)
-			finalString += base_table[cipher[change - 97]]
+			finalString += base_table[cipher.index(letter)]	#get the index number of the letter in the cipher table
+															#aka the index of the plaintext letter in the base table or regular alphabet
 		else:
-			finalString += letter
+			finalString += letter							#letter is not an alpha character, not required to encrypt
 	
-	ciphertext = open("DecryptedMessage.txt", "w")
+	ciphertext = open("DecryptedMessage.txt", "w")			#save the decrypted message as a text file in the same location as this program
 	filename = ciphertext.name
 	ciphertext.write(finalString)
 	ciphertext.close()
@@ -144,7 +147,11 @@ def decrypt():
 	
 #########################################################	Help	 #################################################		
 def help_screen():
-	print("decrypt key can be an decimal integer, letter, or a sentence.")
+	print("The menu options are help, quit, encrypt, and decrypt - type your selection and hit 'Enter'.")
+	print("When 'encrypt' or 'decrypt' are entered, type the key, then a file picker dialog box will appear.")
+	print("The encrypt/decrypt key can be a decimal integer, letter, or a sentence.")
+	print("When a File Open dialog box appears after selecting 'Encrypt', navigate to and select the text file to be encrypted.")
+	print("When a File Open dialog box appears after selecting 'Decrypt', navigate to and select the encrypted message to be revealed.")
 
 #########################################################	Main	 #################################################	
 print("This program will encrypt and decrypt a file made up of english words.\n\n\
