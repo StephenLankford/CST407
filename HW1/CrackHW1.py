@@ -17,6 +17,11 @@ import os
 #########################################################	Global Variables	 #################################################	
 user_input = ""
 valid_input = ["help", "dictionary", "statistical", "quit"]
+base_table = "abcdefghijklmnopqrstuvwxyz"
+letters = "ETAOINSRHDLUCMFYWGPBVKXQJZ"
+frequency = [12.02, 9.10, 8.12, 7.68, 7.31, 6.95, 6.28, 6.02, 5.92,
+            4.32, 3.98, 2.88, 2.71, 2.61, 2.30, 2.11, 2.09, 2.03, 1.82,
+            1.49, 1.11, 0.69, 0.17, 0.11, 0.10, 0.07]
 
 #########################################################	Validate Input	 #################################################	
 def sanitize_input(raw):
@@ -48,7 +53,7 @@ def dictionary():
 
     finalString = ""
 
-    ciphertext = open("EncryptedMessage.txt", "w")		#save the encrypted message as a text file in the same location as this program
+    ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
     filename = ciphertext.name	
     ciphertext.write(finalString)
     ciphertext.close()
@@ -59,9 +64,22 @@ def statistical():
     filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
     toEncrypt = open(filePath, "r")		#open as read only
 
+    endOfFile = False
     finalString = ""
-    
-    ciphertext = open("EncryptedMessage.txt", "w")		#save the encrypted message as a text file in the same location as this program
+    statCount = [None] * 26
+    print(statCount)
+
+    while(not endOfFile):
+        letter = toEncrypt.read(1)	#read one character at a time
+        if letter == '':				#no character read
+            endOfFile = True		#end of file
+        elif (letter.isalpha()):						#end of file not detected yet
+            change = ord(letter.upper())	#find ascii value of uppercase char
+            statCount[change - 65] += 1     #count the number of times each letter is seen
+        else:
+            finalString += letter
+
+    ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
     filename = ciphertext.name	
     ciphertext.write(finalString)
     ciphertext.close()
