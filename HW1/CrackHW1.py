@@ -6,9 +6,17 @@
 #	Summary: Crack Caesar ciphertext
 ################################################################################################################################
 
+import sys
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import *
+from pathlib import Path
+from collections import OrderedDict
+import os
+
 #########################################################	Global Variables	 #################################################	
 user_input = ""
-valid_input = ["help", "encrypt", "decrypt", "quit"]
+valid_input = ["help", "dictionary", "statistical", "quit"]
 
 #########################################################	Validate Input	 #################################################	
 def sanitize_input(raw):
@@ -21,16 +29,43 @@ def sanitize_input(raw):
 
 #########################################################	Directory	 #################################################	
 def action(selection):
-	if selection == "encrypt":
-		encrypt()
-	elif selection == "decrypt":
-		decrypt()
+	if selection == "dictionary":
+		dictionary()
+	elif selection == "statistical":
+		statistical()
 	elif selection == "help":
 		help_screen()
 	else:
 		print("error! user value was: ", user_input, ", but you somehow got here, bravo.\n")
 		#sys.exit("__________fatal error__________"
 
+#########################################################	Encryption	 #################################################			
+def dictionary():
+
+    #open filepicker dialog box
+    filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
+    toEncrypt = open(filePath, "r")		#open as read only
+
+    finalString = ""
+
+    ciphertext = open("EncryptedMessage.txt", "w")		#save the encrypted message as a text file in the same location as this program
+    filename = ciphertext.name	
+    ciphertext.write(finalString)
+    ciphertext.close()
+    os.system(filename)
+#########################################################	Encryption	 #################################################			
+def statistical():
+    #open filepicker dialog box
+    filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
+    toEncrypt = open(filePath, "r")		#open as read only
+
+    finalString = ""
+    
+    ciphertext = open("EncryptedMessage.txt", "w")		#save the encrypted message as a text file in the same location as this program
+    filename = ciphertext.name	
+    ciphertext.write(finalString)
+    ciphertext.close()
+    os.system(filename)
 #########################################################	Help	 #################################################		
 def help_screen():
 	print("The menu options are help, quit, encrypt, and decrypt - type your selection and hit 'Enter'.")
