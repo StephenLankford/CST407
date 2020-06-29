@@ -59,10 +59,10 @@ def caesar_cipher_table(key):
 				valid_num = False
 			if not (element.isalpha()):
 				valid_str = False
-		if ((count == 1) and (key.isalpha())):
-			key = ord(key.upper()) - 65
-			valid_str = False
-			valid_num = True
+		#if ((count == 1) and (key.isalpha())):
+			#key = ord(key.upper()) - 65
+			#valid_str = False
+			#valid_num = True
 			
 		if valid_entry == True:
 			if (valid_num ^ valid_str):
