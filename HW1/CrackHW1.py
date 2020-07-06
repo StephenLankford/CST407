@@ -12,16 +12,19 @@ from tkinter import filedialog
 from tkinter import *
 from pathlib import Path
 from collections import OrderedDict
+from collections import deque
 import os
 
 #########################################################	Global Variables	 #################################################	
 user_input = ""
-valid_input = ["help", "dictionary", "statistical", "quit"]
+valid_input = ["help", "statistical", "quit"]	#add dictionary when implemented
 base_table = "abcdefghijklmnopqrstuvwxyz"
 letters = "ETAOINSRHDLUCMFYWGPBVKXQJZ"
 frequency = [12.02, 9.10, 8.12, 7.68, 7.31, 6.95, 6.28, 6.02, 5.92,
             4.32, 3.98, 2.88, 2.71, 2.61, 2.30, 2.11, 2.09, 2.03, 1.82,
-            1.49, 1.11, 0.69, 0.17, 0.11, 0.10, 0.07]
+            1.49, 1.11, 0.69, 0.17, 0.11, 0.10, 0.07]	#e-z
+frequencySorted  = [8.12, 1.49, 2.71, 4.32, 12.02, 2.3, 2.03, 5.92, 7.31, .1, .69, 3.98,
+            2.61, 6.95, 7.68, 1.82, .11, 6.02, 6.28, 9.1, 2.88, 1.11, 2.09, .17, 2.11, .07]	#a-z
 
 #########################################################	Validate Input	 #################################################	
 def sanitize_input(raw):
@@ -63,13 +66,14 @@ def statistical():
     #open filepicker dialog box
     filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
     toDecrypt = open(filePath, "r")		#open as read only
-
+    sortedList = sorted(frequency, reverse = True)
     endOfFile = False
     finalString = ""
     statCount = [0] * 26
+    differenceCount = [0] * 26
     letterCount = 0
     difference = 0
-    print(statCount)
+    #print(statCount)
 
     while(not endOfFile):
         letter = toDecrypt.read(1)	#read one character at a time
@@ -80,32 +84,26 @@ def statistical():
             statCount[change - 65] += 1     #count the number of times each letter is seen
             letterCount += 1
     toDecrypt.close()
-    for element in statCount:
-        print(element)
-        statCount[element-1] = statCount[element-1] / letterCount
-    print(statCount)
-    for element in statCount:
-        difference += abs(statCount[element-1] - frequency[element-1])
-		
-    print(difference)
-    
-	
-    #maxpos = statCount.index(max(statCount))
-    #likelyA = decrypt(maxpos - 4,filePath) #assuming most common letter is an E, so subtract the position of the most common letter (probably E) to A. 
-    #print(maxpos-4)
-    #statCount[maxpos] = 0 # remove that letter from my analysis
-	
-    #maxpos = statCount.index(max(statCount))
-    #likelyE = decrypt(maxpos, filePath)
-    #statCount[maxpos] = 0 # remove that letter from my analysis
-    #print(maxpos)
-   # maxpos = statCount.index(max(statCount))
-    #likelyT = decrypt(maxpos + 15, filePath)
-    #statCount[maxpos] = 0 # remove that letter from my analysis
-    #print(maxpos + 15)
-    #print(statCount)
-    #print(likelyE, "\n",likelyT, "\n",likelyA, "\n")
-    #analysis and swap code here
+    for element in range(len(statCount)):
+        #print(element)
+        statCount[element] = (statCount[element] / letterCount) * 100
+    #print(statCount)    
+    for element in range(len(statCount)):
+        for x in range(len(statCount)):
+            difference += abs(statCount[x] - frequencySorted[x]) 
+        differenceCount[element] = difference
+        statCount = deque(statCount)
+        statCount.rotate(-1)
+        statCount = list(statCount)
+        difference = 0
+    #frequencySorted list
+    #statCount 26 element array that contains the average occurance of each letter (probably not aligned to the frequencySorted)
+    #differenceCount 26 element array [100]
+   
+
+    #print(differenceCount)
+    key = differenceCount.index(min(differenceCount))
+    finalString = decrypt(key, filePath)
 
     ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
     filename = ciphertext.name	
@@ -151,7 +149,7 @@ def caesar_cipher_table(key):
 	return cipher
 #########################################################	Help	 #################################################		
 def help_screen():
-	print("The menu options are help, quit, encrypt, and decrypt - type your selection and hit 'Enter'.")
+	print("The menu options are help, quit, statistical, and dictionary - type your selection and hit 'Enter'.")
 	print("When 'dictionary' or 'statistical' are entered, type the key, then a file picker dialog box will appear.")
 	print("When a File Open dialog box appears after selecting 'dictionary', navigate to and select the text file to be encrypted.")
 	print("When a File Open dialog box appears after selecting 'statistical', navigate to and select the encrypted message to be revealed.")
@@ -159,7 +157,7 @@ def help_screen():
 #########################################################	Main	 #################################################	
 print("This program will attempt to crack a caesar cipher.\n\n\
 for help, type help.\n\
-for dictionary attack, type dictionary\n\
+for dictionary attack, type dictionary *NOT CURRENTLY IMPLEMENTED*\n\
 for statistical analysis, type statistical\n\
 to quit, type quit.")
 
