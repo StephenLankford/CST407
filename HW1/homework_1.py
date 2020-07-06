@@ -16,11 +16,19 @@ from collections import OrderedDict
 import os
 
 #########################################################	Global Variables	 #################################################	
+#	these are our global variables.
+#	User input defaults to empty.
+#	base_table is alphabet a-z.
+#	valid_input is the menu options a user can enter.
+##################################################################################################################################
 user_input = ""
 base_table = "abcdefghijklmnopqrstuvwxyz"
 valid_input = ["help", "encrypt", "decrypt", "quit"]
 
-#########################################################	Validate Input	 #################################################	
+#########################################################	Validate Input	 #################################################
+#	This function ensures the input from the user is valid. The user stays in this loop until a valid menu option is selected.
+#	This function takes a string of characters, and returns the validated string of characters.
+##############################################################################################################################	
 def sanitize_input(raw):
 
 	while (raw in valid_input) != True: #while the user doesn't type something from the valid_input list
@@ -29,7 +37,10 @@ def sanitize_input(raw):
 	
 	return raw
 
-#########################################################	Directory	 #################################################	
+#########################################################	Directory	 #################################################
+#	This function calls other functions depending on what the user entered. 
+#	It is passed a string, and depending on the string calls another function to perform the action the user requested
+##########################################################################################################################	
 def action(selection):
 	if selection == "encrypt":
 		encrypt()
@@ -39,50 +50,55 @@ def action(selection):
 		help_screen()
 	else:
 		print("error! user value was: ", user_input, ", but you somehow got here, bravo.\n")
-		#sys.exit("__________fatal error__________"
+		sys.exit("__________fatal error__________")
 
-#########################################################	Caesar	 #################################################	
+#########################################################	Caesar	 #################################################
+# 	This function converts a key and returns the caesar cipher table for the encrypt or decrypt functions.
+#	Takes a key (letter, number, string of characters)
+#	Validates the key, won't leave until a valid key is entered
+#	Prints the table, and returns the table to the function that called it.
+######################################################################################################################
 def caesar_cipher_table(key):
 	valid = False
 	while valid == False:
-		cipher = ""
+		cipher = "" #empty string to build cipher table
 		valid_num = True
 		valid_str = True
 		valid_entry = False
 		cipher_number = 0
-		count = 0
 		temp_str = ""
-		for element in key:
-			count += 1
-			valid_entry = True
-			if not (element.isdigit()):
+		for element in key: #go through the key that was passed
+			valid_entry = True #got to the loop, so its not an empty key
+			if not (element.isdigit()): #if it isn't a digit, can't be a valid number
 				valid_num = False
-			if not (element.isalpha()):
+			if not (element.isalpha()): #if it isn't a letter, can't be a valid string
 				valid_str = False
-		#if ((count == 1) and (key.isalpha())):
-			#key = ord(key.upper()) - 65
-			#valid_str = False
-			#valid_num = True
 			
-		if valid_entry == True:
-			if (valid_num ^ valid_str):
-				if (valid_num):
-					cipher_number = int(key) % 26
-					temp_str = base_table[0:cipher_number]
-					cipher = base_table[cipher_number: ]
-					cipher = (cipher + temp_str).upper()
-					valid = True
+		if valid_entry == True: #if the string wasn't empty
+			if (valid_num ^ valid_str): #and only one is true
+				if (valid_num): #if its a number
+					cipher_number = int(key) % 26					#base table is a list containing letters from A-Z
+					temp_str = base_table[0:cipher_number] #make a temp string from 0 to the cipher number
+					cipher = base_table[cipher_number: ] #set the cipher equal to the key to the end of the list
+					cipher = (cipher + temp_str).upper() #set the cipher equal to the cipher + the temp string to create a rotated list of letters
+					valid = True #valid input, don't need to keep the loop going
 				else:
-					cipher = key + base_table
+					cipher = key + base_table #set the cipher equal to the key + the base table. The key can be a letter or a string of letters.
 					cipher = ("".join(OrderedDict.fromkeys(cipher))).upper() # joins characters together with "", puts them in an ordered dictionary using the cipher, uppercases it
-					valid = True
+					valid = True												#ordered dictionary means no repeats, so all repeats removed after the first occurrance.
 		if valid == False:
-			print("Invalid key entered. A key can be a letter, a base 10 number, or a sentence.\n")
+			print("Invalid key entered. A key can be a letter, a base 10 number, or a sentence.\n") #didn't get a valid input. ask for another key.
 			key = input("Enter a valid key: ")
-	print(cipher)
-	return cipher
+	print(cipher) #print the cipher table for the user.
+	return cipher #return the cipher table to be used by the calling function
 
-#########################################################	Encryption	 #################################################			
+#########################################################	Encryption	 #################################################
+#	Encrypts a file based on the key that was entered by the user.
+#	Asks the user for a key, calls caesar_cipher_table, and encrypts the file given the key.
+#	File output is upper case
+#	Only english letters are converted, all other characters are ignored.
+#	Opens the file for the user to see.
+##########################################################################################################################			
 def encrypt():
 	key = input("Enter the encryption key (character, string, or integer): ")
 
@@ -105,15 +121,21 @@ def encrypt():
 			# print(finalString)
 			finalString += cipher[change - 65]	#convert plaintext to ciphertext based on ascii mod 26
 		else:
-			finalString += letter
+			finalString += letter #just add the letter to the string if its not important to us (EOF, non alphabetical character)
 	
 	ciphertext = open("EncryptedMessage.txt", "w")		#save the encrypted message as a text file in the same location as this program
 	filename = ciphertext.name	
-	ciphertext.write(finalString)
+	ciphertext.write(finalString) 
 	ciphertext.close()
-	os.system(filename)
+	os.system(filename) #open the file in default text editor
 	
 #########################################################	Decryption	 #################################################
+#	Decrypts a file based on the key that was entered by the user.
+#	Asks the user for a key, calls caesar_cipher_table, and decrypts the file given the key.
+#	File output is lower case
+#	Only english letters are converted, all other characters are ignored.
+#	Opens the file for the user to see.
+##########################################################################################################################
 def decrypt():
 	key = input("Enter the encryption key (character, string, or integer): ")
 
@@ -143,7 +165,7 @@ def decrypt():
 	filename = ciphertext.name
 	ciphertext.write(finalString)
 	ciphertext.close()
-	os.system(filename)
+	os.system(filename) #open the file in default text editor
 	
 #########################################################	Help	 #################################################		
 def help_screen():
