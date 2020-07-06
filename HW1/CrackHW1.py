@@ -37,9 +37,7 @@ def sanitize_input(raw):
 
 #########################################################	Directory	 #################################################	
 def action(selection):
-	if selection == "dictionary":
-		dictionary()
-	elif selection == "statistical":
+	if selection == "statistical":
 		statistical()
 	elif selection == "help":
 		help_screen()
@@ -47,21 +45,7 @@ def action(selection):
 		print("error! user value was: ", user_input, ", but you somehow got here, bravo.\n")
 		#sys.exit("__________fatal error__________"
 
-#########################################################	Encryption	 #################################################			
-def dictionary():
-
-    #open filepicker dialog box
-    filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
-    toEncrypt = open(filePath, "r")		#open as read only
-
-    finalString = ""
-
-    ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
-    filename = ciphertext.name	
-    ciphertext.write(finalString)
-    ciphertext.close()
-    os.system(filename)
-#########################################################	Encryption	 #################################################			
+#########################################################	Statistical	 #################################################			
 def statistical():
     #open filepicker dialog box
     filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
@@ -149,15 +133,13 @@ def caesar_cipher_table(key):
 	return cipher
 #########################################################	Help	 #################################################		
 def help_screen():
-	print("The menu options are help, quit, statistical, and dictionary - type your selection and hit 'Enter'.")
-	print("When 'dictionary' or 'statistical' are entered, type the key, then a file picker dialog box will appear.")
-	print("When a File Open dialog box appears after selecting 'dictionary', navigate to and select the text file to be encrypted.")
+	print("The menu options are help, quit, and statistical - type your selection and hit 'Enter'.")
+	print("When 'statistical' is entered, type the key, then a file picker dialog box will appear.")
 	print("When a File Open dialog box appears after selecting 'statistical', navigate to and select the encrypted message to be revealed.")
 
 #########################################################	Main	 #################################################	
 print("This program will attempt to crack a caesar cipher.\n\n\
 for help, type help.\n\
-for dictionary attack, type dictionary *NOT CURRENTLY IMPLEMENTED*\n\
 for statistical analysis, type statistical\n\
 to quit, type quit.")
 
