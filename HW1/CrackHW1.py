@@ -62,23 +62,30 @@ def dictionary():
 def statistical():
     #open filepicker dialog box
     filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
-    toEncrypt = open(filePath, "r")		#open as read only
+    toDecrypt = open(filePath, "r")		#open as read only
 
     endOfFile = False
     finalString = ""
-    statCount = [None] * 26
+    statCount = [0] * 26
     print(statCount)
 
     while(not endOfFile):
-        letter = toEncrypt.read(1)	#read one character at a time
+        letter = toDecrypt.read(1)	#read one character at a time
         if letter == '':				#no character read
             endOfFile = True		#end of file
         elif (letter.isalpha()):						#end of file not detected yet
             change = ord(letter.upper())	#find ascii value of uppercase char
             statCount[change - 65] += 1     #count the number of times each letter is seen
         else:
-            finalString += letter
-
+            #finalString += letter
+	
+	likelyE = ""
+	likelyT = ""
+	likelyA = ""
+	
+	maxpos = statCount.index(max(statCount))
+	caesar_cipher_table(maxpos)
+	
     #analysis and swap code here
 
     ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
@@ -86,6 +93,71 @@ def statistical():
     ciphertext.write(finalString)
     ciphertext.close()
     os.system(filename)
+#########################################################	Decryption	 #################################################
+def decrypt():
+	key = input("Enter the encryption key (character, string, or integer): ")
+
+	cipher = caesar_cipher_table(key)
+
+	#open filepicker dialog box
+	filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
+	toDecrypt = open(filePath, "r")		#open as read only
+
+	endOfFile = False
+	finalString = ""
+
+	while(not endOfFile):
+		letter = toDecrypt.read(1)	#read one character at a time
+		if letter == '':				#no character read
+			endOfFile = True		#end of file
+		elif (letter.isalpha()):						#end of file not detected yet
+			change = ord(letter.lower())	#find ascii value of lowercase char
+			#print(change - 65)
+			#print(finalString)
+			finalString += base_table[cipher.index(letter)]	#get the index number of the letter in the cipher table
+															#aka the index of the plaintext letter in the base table or regular alphabet
+		else:
+			finalString += letter							#letter is not an alpha character, not required to encrypt
+#########################################################	Table	 #################################################	
+	def caesar_cipher_table(key):
+	valid = False
+	while valid == False:
+		cipher = ""
+		valid_num = True
+		valid_str = True
+		valid_entry = False
+		cipher_number = 0
+		count = 0
+		temp_str = ""
+		for element in key:
+			count += 1
+			valid_entry = True
+			if not (element.isdigit()):
+				valid_num = False
+			if not (element.isalpha()):
+				valid_str = False
+		#if ((count == 1) and (key.isalpha())):
+			#key = ord(key.upper()) - 65
+			#valid_str = False
+			#valid_num = True
+			
+		if valid_entry == True:
+			if (valid_num ^ valid_str):
+				if (valid_num):
+					cipher_number = int(key) % 26
+					temp_str = base_table[0:cipher_number]
+					cipher = base_table[cipher_number: ]
+					cipher = (cipher + temp_str).upper()
+					valid = True
+				else:
+					cipher = key + base_table
+					cipher = ("".join(OrderedDict.fromkeys(cipher))).upper() # joins characters together with "", puts them in an ordered dictionary using the cipher, uppercases it
+					valid = True
+		if valid == False:
+			print("Invalid key entered. A key can be a letter, a base 10 number, or a sentence.\n")
+			key = input("Enter a valid key: ")
+	print(cipher)
+	return cipher
 #########################################################	Help	 #################################################		
 def help_screen():
 	print("The menu options are help, quit, encrypt, and decrypt - type your selection and hit 'Enter'.")
@@ -97,7 +169,7 @@ def help_screen():
 print("This program will attempt to crack a caesar cipher.\n\n\
 for help, type help.\n\
 for dictionary attack, type dictionary\n\
-for statistical analysis, type analysis\n\
+for statistical analysis, type statistical\n\
 to quit, type quit.")
 
 while user_input != "quit": #stay in the loop until quit is ran
