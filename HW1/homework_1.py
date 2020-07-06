@@ -122,7 +122,7 @@ def encrypt():
 			finalString += cipher[change - 65]	#convert plaintext to ciphertext based on ascii mod 26
 		else:
 			finalString += letter #just add the letter to the string if its not important to us (EOF, non alphabetical character)
-	
+	toEncrypt.close()
 	ciphertext = open("EncryptedMessage.txt", "w")		#save the encrypted message as a text file in the same location as this program
 	filename = ciphertext.name	
 	ciphertext.write(finalString) 
@@ -160,7 +160,7 @@ def decrypt():
 															#aka the index of the plaintext letter in the base table or regular alphabet
 		else:
 			finalString += letter							#letter is not an alpha character, not required to encrypt
-	
+	toDecrypt.close()
 	ciphertext = open("DecryptedMessage.txt", "w")			#save the decrypted message as a text file in the same location as this program
 	filename = ciphertext.name
 	ciphertext.write(finalString)
