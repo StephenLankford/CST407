@@ -76,16 +76,24 @@ def statistical():
         elif (letter.isalpha()):						#end of file not detected yet
             change = ord(letter.upper())	#find ascii value of uppercase char
             statCount[change - 65] += 1     #count the number of times each letter is seen
-        else:
-            #finalString += letter
+    toDecrypt.close()
+    likelyE = ""
+    likelyT = ""
+    likelyA = ""
 	
-	likelyE = ""
-	likelyT = ""
-	likelyA = ""
+    maxpos = statCount.index(max(statCount))
+    likelyE = decrypt(maxpos,filePath)
+    statCount[maxpos] = 0 # remove that letter from my analysis
 	
-	maxpos = statCount.index(max(statCount))
-	caesar_cipher_table(maxpos)
+    maxpos = statCount.index(max(statCount))
+    likelyT = decrypt(maxpos, filePath)
+    statCount[maxpos] = 0 # remove that letter from my analysis
 	
+    maxpos = statCount.index(max(statCount))
+    likelyA = decrypt(maxpos, filePath)
+    statCount[maxpos] = 0 # remove that letter from my analysis
+	
+    print(likelyE, "\n",likelyT, "\n",likelyA, "\n")
     #analysis and swap code here
 
     ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
@@ -94,13 +102,11 @@ def statistical():
     ciphertext.close()
     os.system(filename)
 #########################################################	Decryption	 #################################################
-def decrypt():
-	key = input("Enter the encryption key (character, string, or integer): ")
-
+def decrypt(key, filePath):
 	cipher = caesar_cipher_table(key)
 
 	#open filepicker dialog box
-	filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
+	#filePath = filedialog.askopenfilename(initialdir = "C:\\",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
 	toDecrypt = open(filePath, "r")		#open as read only
 
 	endOfFile = False
@@ -118,44 +124,18 @@ def decrypt():
 															#aka the index of the plaintext letter in the base table or regular alphabet
 		else:
 			finalString += letter							#letter is not an alpha character, not required to encrypt
+	toDecrypt.close()
+	return(finalString)
 #########################################################	Table	 #################################################	
-	def caesar_cipher_table(key):
-	valid = False
-	while valid == False:
-		cipher = ""
-		valid_num = True
-		valid_str = True
-		valid_entry = False
-		cipher_number = 0
-		count = 0
-		temp_str = ""
-		for element in key:
-			count += 1
-			valid_entry = True
-			if not (element.isdigit()):
-				valid_num = False
-			if not (element.isalpha()):
-				valid_str = False
-		#if ((count == 1) and (key.isalpha())):
-			#key = ord(key.upper()) - 65
-			#valid_str = False
-			#valid_num = True
+def caesar_cipher_table(key):
+	cipher = ""
+	temp_str = ""
+	cipher_number = 0
+	cipher_number = int(key) % 26
+	temp_str = base_table[0:cipher_number]
+	cipher = base_table[cipher_number: ]
+	cipher = (cipher + temp_str).upper()
 			
-		if valid_entry == True:
-			if (valid_num ^ valid_str):
-				if (valid_num):
-					cipher_number = int(key) % 26
-					temp_str = base_table[0:cipher_number]
-					cipher = base_table[cipher_number: ]
-					cipher = (cipher + temp_str).upper()
-					valid = True
-				else:
-					cipher = key + base_table
-					cipher = ("".join(OrderedDict.fromkeys(cipher))).upper() # joins characters together with "", puts them in an ordered dictionary using the cipher, uppercases it
-					valid = True
-		if valid == False:
-			print("Invalid key entered. A key can be a letter, a base 10 number, or a sentence.\n")
-			key = input("Enter a valid key: ")
 	print(cipher)
 	return cipher
 #########################################################	Help	 #################################################		
