@@ -167,7 +167,9 @@ def decrypt():
 	ciphertext.close()
 	os.system(filename) #open the file in default text editor
 	
-#########################################################	Help	 #################################################		
+#########################################################	Help	 #################################################
+#	Describes what each menu option does, as well as general program functionality
+######################################################################################################################		
 def help_screen():
 	print("The menu options are help, quit, encrypt, and decrypt - type your selection and hit 'Enter'.")
 	print("When 'encrypt' or 'decrypt' are entered, type the key, then a file picker dialog box will appear.")
