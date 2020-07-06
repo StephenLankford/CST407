@@ -67,6 +67,8 @@ def statistical():
     endOfFile = False
     finalString = ""
     statCount = [0] * 26
+    letterCount = 0
+    difference = 0
     print(statCount)
 
     while(not endOfFile):
@@ -76,24 +78,33 @@ def statistical():
         elif (letter.isalpha()):						#end of file not detected yet
             change = ord(letter.upper())	#find ascii value of uppercase char
             statCount[change - 65] += 1     #count the number of times each letter is seen
+            letterCount += 1
     toDecrypt.close()
-    likelyE = ""
-    likelyT = ""
-    likelyA = ""
+    for element in statCount:
+        print(element)
+        statCount[element-1] = statCount[element-1] / letterCount
+    print(statCount)
+    for element in statCount:
+        difference += abs(statCount[element-1] - frequency[element-1])
+		
+    print(difference)
+    
 	
-    maxpos = statCount.index(max(statCount))
-    likelyE = decrypt(maxpos,filePath)
-    statCount[maxpos] = 0 # remove that letter from my analysis
+    #maxpos = statCount.index(max(statCount))
+    #likelyA = decrypt(maxpos - 4,filePath) #assuming most common letter is an E, so subtract the position of the most common letter (probably E) to A. 
+    #print(maxpos-4)
+    #statCount[maxpos] = 0 # remove that letter from my analysis
 	
-    maxpos = statCount.index(max(statCount))
-    likelyT = decrypt(maxpos, filePath)
-    statCount[maxpos] = 0 # remove that letter from my analysis
-	
-    maxpos = statCount.index(max(statCount))
-    likelyA = decrypt(maxpos, filePath)
-    statCount[maxpos] = 0 # remove that letter from my analysis
-	
-    print(likelyE, "\n",likelyT, "\n",likelyA, "\n")
+    #maxpos = statCount.index(max(statCount))
+    #likelyE = decrypt(maxpos, filePath)
+    #statCount[maxpos] = 0 # remove that letter from my analysis
+    #print(maxpos)
+   # maxpos = statCount.index(max(statCount))
+    #likelyT = decrypt(maxpos + 15, filePath)
+    #statCount[maxpos] = 0 # remove that letter from my analysis
+    #print(maxpos + 15)
+    #print(statCount)
+    #print(likelyE, "\n",likelyT, "\n",likelyA, "\n")
     #analysis and swap code here
 
     ciphertext = open("CrackAttack.txt", "w")		#save the encrypted message as a text file in the same location as this program
