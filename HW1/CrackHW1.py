@@ -140,7 +140,7 @@ def decrypt(key, filePath):
 			change = ord(letter.lower())	#find ascii value of lowercase char
 			#print(change - 65)
 			#print(finalString)
-			finalString += base_table[cipher.index(letter)]	#get the index number of the letter in the cipher table
+			finalString += base_table[cipher.index(letter.upper())]	#get the index number of the letter in the cipher table
 															#aka the index of the plaintext letter in the base table or regular alphabet
 		else:
 			finalString += letter							#letter is not an alpha character, not required to encrypt
