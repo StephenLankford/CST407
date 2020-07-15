@@ -8,8 +8,6 @@ namespace homework2
 {
     class Program
     {
-        private const char V = '0';
-
         static void Main(string[] args)
         {
             string input = "";
