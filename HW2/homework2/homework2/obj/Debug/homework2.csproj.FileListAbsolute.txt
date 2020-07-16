@@ -5,3 +5,10 @@ C:\Users\hayde\Desktop\CST 407\Repo\CST407\HW2\homework2\homework2\obj\Debug\hom
 C:\Users\hayde\Desktop\CST 407\Repo\CST407\HW2\homework2\homework2\obj\Debug\homework2.csproj.CoreCompileInputs.cache
 C:\Users\hayde\Desktop\CST 407\Repo\CST407\HW2\homework2\homework2\obj\Debug\homework2.exe
 C:\Users\hayde\Desktop\CST 407\Repo\CST407\HW2\homework2\homework2\obj\Debug\homework2.pdb
+D:\OIT\Summer2020\CST407\Code\CST407\HW2\homework2\homework2\obj\Debug\homework2.csprojAssemblyReference.cache
+D:\OIT\Summer2020\CST407\Code\CST407\HW2\homework2\homework2\obj\Debug\homework2.csproj.CoreCompileInputs.cache
+D:\OIT\Summer2020\CST407\Code\CST407\HW2\homework2\homework2\obj\Debug\homework2.exe
+D:\OIT\Summer2020\CST407\Code\CST407\HW2\homework2\homework2\obj\Debug\homework2.pdb
+D:\OIT\Summer2020\CST407\Code\CST407\HW2\homework2\homework2\bin\Debug\homework2.exe.config
+D:\OIT\Summer2020\CST407\Code\CST407\HW2\homework2\homework2\bin\Debug\homework2.exe
+D:\OIT\Summer2020\CST407\Code\CST407\HW2\homework2\homework2\bin\Debug\homework2.pdb
