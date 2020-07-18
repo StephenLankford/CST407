@@ -3,7 +3,7 @@
  * Assignment: 2 - SDES
  * Date Started: 07/14/2020
  * Updates:     07/14/2020 - work on SDES key gen, started SDES encryption steps
- *              07/14/2020 - FK and switch finished
+ *              07/17/2020 - FK and switch finished
  * ***************************************************************************************************************/
 
 using System;
