@@ -76,16 +76,24 @@ namespace homework2
             right[3] = input[6];
 
             //call FK
-            FK(ref left);    //ref needed
-            Switch(ref left, ref right);  //ref needed
-            FK(ref left);    //inverse IP created
+            FK(ref right, ref left);    //ref needed
+            //Switch(ref left, ref right);  //just switch the variables
+            FK(ref left, ref right);    //inverse IP created
+            IPinverse(left, right);
             //next call?
         }
 
-        public void FK(ref char[] l)
+        public void IPinverse(char[] l, char[] m)
         {
+            char[] inverseIP = new char[8] {  } 
+            Console.WriteLine()
+        }
+
+        public void FK(ref char[] l, ref char[] m)
+        {
+            
             //expansion/permutation
-            char[] EP1 = { l[3], l[0], l[1], l[2], l[1], l[2], l[3], l[0] };
+            char[] EP1 = { m[3], m[0], m[1], m[2], m[1], m[2], m[3], m[0] };
 
             //variables
             char[] P4 = { '0', '0', '0', '0' };
@@ -99,7 +107,7 @@ namespace homework2
                 {
                     EP1[i] = '0';
                 }
-                else if (key1[i] != EP1[i])
+                else
                 {
                     EP1[i] = '1';
                 }
@@ -109,12 +117,12 @@ namespace homework2
             //second and third bits are the column
             //EP1[0] = p0,0, EP1[1] = p0,1, EP1[2] = p0,2, EP1[3] = p0,3, 
             //EP1[4] = p1,0, EP1[5] = p1,1, EP1[6] = p1,2, EP1[7] = p1,3
-            for (int i = 0, j = 3; i < 2; i++, j--)
-            {
-                switch (EP1[i]) //row
+            //for (int i = 0, j = 3; i < 2; i++, j--)
+            
+                switch (EP1[0]) //row
                 {
                     case '0':
-                        switch (EP1[j])
+                        switch (EP1[3])
                         {
                             case '0':
                                 //first row
@@ -127,7 +135,7 @@ namespace homework2
                         }
                         break;
                     case '1':
-                        switch (EP1[j])
+                        switch (EP1[3])
                         {
                             case '0':
                                 //third row
@@ -141,41 +149,101 @@ namespace homework2
                         break;
                 }
 
-                switch (EP1[i + 4]) //column
+                switch (EP1[1]) //column
                 {
                     case '0':
-                        switch (EP1[j + 4])
+                        switch (EP1[2])
                         {
                             case '0':
                                 //first column
-                                rowCol1[1] = 0;
+                                rowCol0[1] = 0;
                                 break;
                             case '1':
                                 //second column
-                                rowCol1[1] = 1;
+                                rowCol0[1] = 1;
                                 break;
                         }
                         break;
                     case '1':
-                        switch (EP1[j + 4])
+                        switch (EP1[2])
                         {
                             case '0':
                                 //third column
-                                rowCol1[1] = 2;
+                                rowCol0[1] = 2;
                                 break;
                             case '1':
                                 //fourth column
-                                rowCol1[1] = 3;
+                                rowCol0[1] = 3;
                                 break;
                         }
                         break;
                 }
+            //need to repeat for other input
+            switch (EP1[4]) //row
+            {
+                case '0':
+                    switch (EP1[7])
+                    {
+                        case '0':
+                            //first row
+                            rowCol1[0] = 0;
+                            break;
+                        case '1':
+                            //second row
+                            rowCol1[0] = 1;
+                            break;
+                    }
+                    break;
+                case '1':
+                    switch (EP1[7])
+                    {
+                        case '0':
+                            //third row
+                            rowCol1[0] = 2;
+                            break;
+                        case '1':
+                            //fourth row
+                            rowCol1[0] = 3;
+                            break;
+                    }
+                    break;
             }
 
-            //s box magic
-            s0result = s0[rowCol0[0], rowCol0[1]];  //grab sbox 0 value
+            switch (EP1[5]) //column
+            {
+                case '0':
+                    switch (EP1[6])
+                    {
+                        case '0':
+                            //first column
+                            rowCol1[1] = 0;
+                            break;
+                        case '1':
+                            //second column
+                            rowCol1[1] = 1;
+                            break;
+                    }
+                    break;
+                case '1':
+                    switch (EP1[6])
+                    {
+                        case '0':
+                            //third column
+                            rowCol1[1] = 2;
+                            break;
+                        case '1':
+                            //fourth column
+                            rowCol1[1] = 3;
+                            break;
+                    }
+                    break;
+            }
+        
+
+        //s box magic
+        s0result = s0[rowCol0[0], rowCol0[1]];  //grab sbox 0 value
             s1result = s1[rowCol1[0], rowCol1[1]];  //grab sbox 1 value
-            switch (s0result)   //create p4
+            switch (s0result)   //generate p4 input
             {
                 case 0:
                     P4[0] = '0';
@@ -214,11 +282,24 @@ namespace homework2
                     break;
             }
 
-            //finalize P4 aka fK output
+            // permutate (actual p4)
             l[0] = P4[1];
             l[1] = P4[3];
             l[2] = P4[2];
             l[3] = P4[0];
+
+            for (int ii = 0; ii < 3; ii++) //add msbits to p4 result
+            {
+                if (l[ii] == m[ii])
+                {
+                    l[ii] = '0';
+                }
+                else
+                {
+                    l[ii] = '1';
+                }
+            }
+
         }
 
         public void Switch(ref char[] l, ref char[] r)
