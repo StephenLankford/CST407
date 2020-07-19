@@ -29,35 +29,35 @@ namespace homework2
                                     { 3, 0, 1, 0 },
                                     { 2, 1, 0, 3 }  }; //2D 
 
-        public static void Main(string[] args) 
+        public static void Main(string[] args)
         {
             //char[] key1 = new char[8];
             //char[] key2 = new char[8];
             string input = "";
-            
+
             bool validInput = false;
 
             Console.WriteLine("Enter a key: ");
             KeyGen(key1, key2);
             validInput = false;
-            
-            while(!validInput)
+
+            while (!validInput)
             {
                 Console.WriteLine("encrypt, decrypt, or quit: ");
                 input = Console.ReadLine();
 
                 if (input.Contains("encrypt") ^ input.Contains("decrypt") && !input.Contains("quit"))
-                { 
+                {
 
                 }
 
 
 
             }
-            
 
-            
-          
+
+
+
         }
 
         public void Encryption(char[] input)   //by reference or by value?
@@ -79,14 +79,15 @@ namespace homework2
             FK(ref right, ref left);    //ref needed
             //Switch(ref left, ref right);  //just switch the variables
             FK(ref left, ref right);    //inverse IP created
-            IPinverse(left, right);
+            
             //next call?
+            Console.WriteLine(IPinverse(left, right));
         }
 
-        public void IPinverse(char[] l, char[] m)
+        public char[] IPinverse(char[] l, char[] m)
         {
-            char[] inverseIP = new char[8] {  } 
-            Console.WriteLine()
+            char[] inverseIP = new char[8] { l[3], l[0], l[2], m[1], m[3], l[1], m[3], m[2] };
+            return inverseIP;
         }
 
         public void FK(ref char[] l, ref char[] m)
