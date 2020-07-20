@@ -48,25 +48,34 @@ namespace homework2
 
             bool quit = false; //used to determine when the program quits
 
-            Console.WriteLine("Enter a key: ");
-            //string userTxt = "";
-            KeyGen(); //generate the 10bit key
+            Console.WriteLine("Welcome to SDES! Encrypt/Decrypt an 8-bit character!");
+            Console.WriteLine();
+
+            //Console.Write("Enter a key: ");
+            //KeyGen(); //generate the 10bit key
             quit = false;
 
             while (!quit)   //console menu
             {
-                Console.WriteLine("encrypt, decrypt, or quit: ");
+                Console.Write("Type one of the following options - encrypt, decrypt, or quit: ");
                 input = Console.ReadLine();
+                Console.WriteLine();
 
                 if (input.Contains("encrypt"))
                 {
-                    Console.WriteLine("\nType a binary 8 bit number to convert: ");
+                    Console.Write("Enter a key: ");
+                    KeyGen(); //generate the 10bit key
+
+                    Console.Write("Type a binary 8 bit number to convert: ");
                     userTxtArray = ValidateNum();
                     Encryption(userTxtArray);
                 }
                 else if (input.Contains("decrypt"))
                 {
-                    Console.WriteLine("\nType a binary 8 bit number to convert: ");
+                    Console.Write("Enter a key: ");
+                    KeyGen(); //generate the 10bit key
+
+                    Console.Write("Type a binary 8 bit number to convert: ");
                     userTxtArray = ValidateNum();
                     Decryption(userTxtArray);
                 }
@@ -76,7 +85,8 @@ namespace homework2
                 }
                 else
                 {
-                    Console.WriteLine("Invalid selection.\n");
+                    Console.WriteLine("Invalid selection!!");
+                    Console.WriteLine();
                 }
             }
         }
@@ -110,8 +120,9 @@ namespace homework2
             FK(ref right, ref left, false);    //inverse IP created, key 2 used second for encrypt
 
             //next call?
-            Console.WriteLine("\nResult: ");
+            Console.Write("Result: ");
             Console.WriteLine(IPinverse(right, left));
+            Console.WriteLine();
         }
         /**********************************************************************
         * Purpose: Decryption. Calls the various functions to decrypt the given 
@@ -143,8 +154,9 @@ namespace homework2
             FK(ref right, ref left, true);    //inverse IP created, use key 1 second for decrypt
 
             //next call?
-            Console.WriteLine("\nResult: ");
+            Console.Write("Result: ");
             Console.WriteLine(IPinverse(right, left));
+            Console.WriteLine();
         }
         public static char[] IPinverse(char[] l, char[] m)
         {
@@ -414,6 +426,7 @@ namespace homework2
             {
                 validKey = true;
                 input = Console.ReadLine();
+                Console.WriteLine();
                 bool isParsable = int.TryParse(input, out _);
 
                 if (isParsable && input.Length == 10) //is the input a: 10 character string
@@ -449,17 +462,18 @@ namespace homework2
                         char[] ls2MSB = { ls1MSB[2], ls1MSB[3], ls1MSB[4], ls1MSB[0], ls1MSB[1] }; //LS-2's
 
                         key2 = new char[] { ls2MSB[0], ls2LSB[2], ls2MSB[1], ls2LSB[3], ls2MSB[2], ls2MSB[0], ls2MSB[4], ls2MSB[3] }; //P8
-                        Console.WriteLine("KEY 1: ");
+                        //Console.WriteLine();
+                        Console.Write("KEY 1: ");
                         Console.WriteLine(key1);
-                        Console.WriteLine("KEY 2: ");
+                        Console.Write("KEY 2: ");
                         Console.WriteLine(key2);
-                        Console.WriteLine("\n");
+                        Console.WriteLine();
                     }
                 }
                 else
                 {
                     validKey = false;
-                    Console.WriteLine("Invalid. Enter a key. A key is 10 bit number containing 1's and 0's.\n");
+                    Console.Write("Invalid. Enter a key. A key is 10-bit number containing 1's and 0's: ");
                 }
             }
         }
@@ -484,6 +498,7 @@ namespace homework2
             {
                 validNum = true;
                 input = Console.ReadLine(); //read in 8bits
+                Console.WriteLine();
                 bool isParsable = int.TryParse(input, out _);
 
                 if (isParsable && input.Length == 8) //is the input a: 8 character string
@@ -499,13 +514,13 @@ namespace homework2
                     if (validNum == false)
                     {
                         //validNum = false;
-                        Console.WriteLine("Invalid. Enter an 8 bit binary number containing 1's and 0's.\n");
+                        Console.WriteLine("Invalid. Enter an 8 bit binary number containing 1's and 0's.");
                     }
                 }
                 else
                 {
                     validNum = false;
-                    Console.WriteLine("Invalid. Enter an 8 bit binary number containing 1's and 0's.\n");
+                    Console.WriteLine("Invalid. Enter an 8 bit binary number containing 1's and 0's.");
                 }
             }
             return num; //return the num if its valid
