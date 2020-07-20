@@ -334,40 +334,40 @@ namespace homework2
             switch (s0result)   //generate p4 input
             {
                 case 0:
-                    P4[1] = '0';
                     P4[0] = '0';
+                    P4[1] = '0';
                     break;
                 case 1:
-                    P4[1] = '0';
-                    P4[0] = '1';
+                    P4[0] = '0';
+                    P4[1] = '1';
                     break;
                 case 2:
-                    P4[1] = '1';
-                    P4[0] = '0';
+                    P4[0] = '1';
+                    P4[1] = '0';
                     break;
                 case 3:
-                    P4[1] = '1';
                     P4[0] = '1';
+                    P4[1] = '1';
                     break;
             }
 
             switch (s1result)   //create p4
             {
                 case 0:
-                    P4[3] = '0';
                     P4[2] = '0';
+                    P4[3] = '0';
                     break;
                 case 1:
-                    P4[3] = '0';
-                    P4[2] = '1';
+                    P4[2] = '0';
+                    P4[3] = '1';
                     break;
                 case 2:
-                    P4[3] = '1';
-                    P4[2] = '0';
+                    P4[2] = '1';
+                    P4[3] = '0';
                     break;
                 case 3:
-                    P4[3] = '1';
                     P4[2] = '1';
+                    P4[3] = '1';
                     break;
             }
 
