@@ -1,9 +1,10 @@
 ﻿/******************************************************************************************************************
  * Programmers: Hayden Hutsell and Stephen Lankford
- * Assignment: 2 - SDES
+ * Assignment: 2 - SDES (https://oit.instructure.com/courses/7105/files/1195299?module_item_id=419476)
  * Date Started: 07/14/2020
  * Updates:     07/14/2020 - work on SDES key gen, started SDES encryption steps
- *              07/17/2020 - FK and switch finished
+ *              07/17/2020 - FK and switch finished, documentation
+ *              07/19/2020 - added decrypt functionality, more documentation
  * ***************************************************************************************************************/
 
 using System;
@@ -20,6 +21,7 @@ namespace homework2
         public static char[] key1 = new char[8];
         public static char[] key2 = new char[8];
         public static char[] userTxtArray = new char[8];
+        //public static bool encryptFlag = true;    //true if encrypting, false if decrypting
 
         static int[,] s0 = new int[4, 4] { { 1, 0, 3, 2 },
                                     { 3, 2, 1, 0 },
@@ -29,7 +31,17 @@ namespace homework2
                                     { 2, 0, 1, 3 },
                                     { 3, 0, 1, 0 },
                                     { 2, 1, 0, 3 }  }; //2D 
-
+        /**********************************************************************
+        * Purpose: Main
+        *
+        * Precondition:
+        *     Program is started
+        *
+        * Postcondition:
+        *      Takes user input for the 10 bit key and performs encryption, 
+        *      decryption, or exits the program.
+        *
+        ************************************************************************/
         public static void Main(string[] args)
         {
             string input = "";
@@ -38,10 +50,10 @@ namespace homework2
 
             Console.WriteLine("Enter a key: ");
             //string userTxt = "";
-            KeyGen(key1, key2);
+            KeyGen(); //generate the 10bit key
             quit = false;
 
-            while (!quit)
+            while (!quit)   //console menu
             {
                 Console.WriteLine("encrypt, decrypt, or quit: ");
                 input = Console.ReadLine();
@@ -54,7 +66,9 @@ namespace homework2
                 }
                 else if (input.Contains("decrypt"))
                 {
-
+                    Console.WriteLine("Type a binary 8 bit number to convert: ");
+                    userTxtArray = ValidateNum();
+                    Decryption(userTxtArray);
                 }
                 else if (input.Contains("quit"))
                 {
@@ -62,12 +76,21 @@ namespace homework2
                 }
                 else
                 {
-                    Console.WriteLine("Invalid selection.");
+                    Console.WriteLine("Invalid selection.\n");
                 }
-
             }
         }
-
+        /**********************************************************************
+        * Purpose: Encryption. Calls the various functions to encrypt the given 
+        *           8 bit plain text.    
+        *
+        * Precondition:
+        *     passed 8 bit plain text.
+        *
+        * Postcondition:
+        *      prints the 8 bit cipher text.
+        *
+        ************************************************************************/
         public static void Encryption(char[] input)   //by reference or by value?
         {
             char[] left = { input[0], input[1], input[2], input[3] };   //left most 4 bits of plaintext
@@ -83,14 +106,23 @@ namespace homework2
             right[2] = input[4];
             right[3] = input[6];
 
-            //call FK
-            FK(ref right, ref left);    //ref needed
-            //Switch(ref left, ref right);  //just switch the variables
-            FK(ref left, ref right);    //inverse IP created
-            
+            FK(ref right, ref left, true);    //ref needed, key 1 used first for encrypt
+            FK(ref left, ref right, false);    //inverse IP created, key 2 used second for encrypt
+
             //next call?
-            Console.WriteLine(IPinverse(left, right));
+            Console.WriteLine(IPinverse(right, left));
         }
+        /**********************************************************************
+        * Purpose: Decryption. Calls the various functions to decrypt the given 
+        *           8 bit cipher text.    
+        *
+        * Precondition:
+        *     passed 8 bit cipher text.
+        *
+        * Postcondition:
+        *      prints the 8 bit plain text.
+        *
+        ************************************************************************/
         public static void Decryption(char[] input)   //by reference or by value?
         {
             char[] left = { input[0], input[1], input[2], input[3] };   //left most 4 bits of plaintext
@@ -106,41 +138,67 @@ namespace homework2
             right[2] = input[4];
             right[3] = input[6];
 
-            //call FK
-            FK(ref right, ref left);    //ref needed
-            //Switch(ref left, ref right);  //just switch the variables
-            FK(ref left, ref right);    //inverse IP created
+            FK(ref right, ref left, false);    //ref needed, use key 2 first for decrypt
+            FK(ref left, ref right, true);    //inverse IP created, use key 1 second for decrypt
 
             //next call?
-            Console.WriteLine(IPinverse(left, right));
+            Console.WriteLine("Result: ",IPinverse(right, left), "\n");
         }
         public static char[] IPinverse(char[] l, char[] m)
         {
             char[] inverseIP = new char[8] { l[3], l[0], l[2], m[1], m[3], l[1], m[3], m[2] };
             return inverseIP;
         }
-
-        public static void FK(ref char[] l, ref char[] m)
+        /**********************************************************************
+        * Purpose: This is the FK function in the SDES algorithm.    
+        *
+        * Precondition:
+        *     passed the 8 bits and an encrypt flag. The encrypt flag determines 
+        *       if key1 or key2 is used for the intial add.
+        *
+        * Postcondition:
+        *      alters the 8 bits (since the lsb and msb are passed by reference, no return)
+        *
+        ************************************************************************/
+        public static void FK(ref char[] l, ref char[] m, bool encryptFlag)
         {
-            
             //expansion/permutation
             char[] EP1 = { m[3], m[0], m[1], m[2], m[1], m[2], m[3], m[0] };
 
             //variables
             char[] P4 = { '0', '0', '0', '0' };
-            int[] rowCol0 = { 0, 0 };   //for s0
-            int[] rowCol1 = { 0, 0 };   //for s1
-            int s0result = 0, s1result = 0;
+            int[] rowCol0 = { 0, 0 };   //coordinate for s0
+            int[] rowCol1 = { 0, 0 };   //coordinate for s1
+            int s0result = 0, s1result = 0; //outputs of sboxes for use in P4
 
-            for (int i = 0; i < 8; i++) //8-bit subkey added to EP using XOR
+            //if encrypt is selected then key 1 is used first, then key 2
+            //if decrypt is selected then key 2 is used first, then key 1
+            if (encryptFlag)
             {
-                if (key1[i] == EP1[i])
+                for (int i = 0; i < 8; i++) //8-bit subkey added to EP using XOR
                 {
-                    EP1[i] = '0';
+                    if (key1[i] == EP1[i])
+                    {
+                        EP1[i] = '0';
+                    }
+                    else
+                    {
+                        EP1[i] = '1';
+                    }
                 }
-                else
+            }
+            else
+            {
+                for (int i = 0; i < 8; i++) //8-bit subkey added to EP using XOR
                 {
-                    EP1[i] = '1';
+                    if (key2[i] == EP1[i])
+                    {
+                        EP1[i] = '0';
+                    }
+                    else
+                    {
+                        EP1[i] = '1';
+                    }
                 }
             }
 
@@ -148,67 +206,66 @@ namespace homework2
             //second and third bits are the column
             //EP1[0] = p0,0, EP1[1] = p0,1, EP1[2] = p0,2, EP1[3] = p0,3, 
             //EP1[4] = p1,0, EP1[5] = p1,1, EP1[6] = p1,2, EP1[7] = p1,3
-            //for (int i = 0, j = 3; i < 2; i++, j--)
-            
-                switch (EP1[0]) //row
-                {
-                    case '0':
-                        switch (EP1[3])
-                        {
-                            case '0':
-                                //first row
-                                rowCol0[0] = 0;
-                                break;
-                            case '1':
-                                //second row
-                                rowCol0[0] = 1;
-                                break;
-                        }
-                        break;
-                    case '1':
-                        switch (EP1[3])
-                        {
-                            case '0':
-                                //third row
-                                rowCol0[0] = 2;
-                                break;
-                            case '1':
-                                //fourth row
-                                rowCol0[0] = 3;
-                                break;
-                        }
-                        break;
-                }
 
-                switch (EP1[1]) //column
-                {
-                    case '0':
-                        switch (EP1[2])
-                        {
-                            case '0':
-                                //first column
-                                rowCol0[1] = 0;
-                                break;
-                            case '1':
-                                //second column
-                                rowCol0[1] = 1;
-                                break;
-                        }
-                        break;
-                    case '1':
-                        switch (EP1[2])
-                        {
-                            case '0':
-                                //third column
-                                rowCol0[1] = 2;
-                                break;
-                            case '1':
-                                //fourth column
-                                rowCol0[1] = 3;
-                                break;
-                        }
-                        break;
-                }
+            switch (EP1[0]) //row
+            {
+                case '0':
+                    switch (EP1[3])
+                    {
+                        case '0':
+                            //first row
+                            rowCol0[0] = 0;
+                            break;
+                        case '1':
+                            //second row
+                            rowCol0[0] = 1;
+                            break;
+                    }
+                    break;
+                case '1':
+                    switch (EP1[3])
+                    {
+                        case '0':
+                            //third row
+                            rowCol0[0] = 2;
+                            break;
+                        case '1':
+                            //fourth row
+                            rowCol0[0] = 3;
+                            break;
+                    }
+                    break;
+            }
+
+            switch (EP1[1]) //column
+            {
+                case '0':
+                    switch (EP1[2])
+                    {
+                        case '0':
+                            //first column
+                            rowCol0[1] = 0;
+                            break;
+                        case '1':
+                            //second column
+                            rowCol0[1] = 1;
+                            break;
+                    }
+                    break;
+                case '1':
+                    switch (EP1[2])
+                    {
+                        case '0':
+                            //third column
+                            rowCol0[1] = 2;
+                            break;
+                        case '1':
+                            //fourth column
+                            rowCol0[1] = 3;
+                            break;
+                    }
+                    break;
+            }
             //need to repeat for other input
             switch (EP1[4]) //row
             {
@@ -269,11 +326,11 @@ namespace homework2
                     }
                     break;
             }
-        
 
-        //s box magic
-        s0result = s0[rowCol0[0], rowCol0[1]];  //grab sbox 0 value
+            //s box magic
+            s0result = s0[rowCol0[0], rowCol0[1]];  //grab sbox 0 value
             s1result = s1[rowCol1[0], rowCol1[1]];  //grab sbox 1 value
+
             switch (s0result)   //generate p4 input
             {
                 case 0:
@@ -293,6 +350,7 @@ namespace homework2
                     P4[1] = '1';
                     break;
             }
+
             switch (s1result)   //create p4
             {
                 case 0:
@@ -332,31 +390,24 @@ namespace homework2
             }
 
         }
-
-        public static void Switch(ref char[] l, ref char[] r)
+        /**********************************************************************
+        * Purpose: generates key 1 and key 2 from a user defined 10 bit key. 
+        *
+        * Precondition:
+        *     none
+        *
+        * Postcondition:
+        *      generates key 1 and 2 following the SDES algorithm.
+        *
+        ************************************************************************/
+        public static void KeyGen()
         {
-            char[] tempR = { l[0], l[1], l[2], l[3] };
-            char[] tempL = { r[0], r[1], r[2], r[3] };
-
-            l[0] = tempL[0];
-            l[1] = tempL[1];
-            l[2] = tempL[2];
-            l[3] = tempL[3];
-
-            r[0] = tempR[0];
-            r[1] = tempR[1];
-            r[2] = tempR[2];
-            r[3] = tempR[3];
-        }
-
-        public static void KeyGen(char[] key1, char[] key2)
-        {
-           string input = "";
-            char[] p10 = new char [10];
+            string input = "";
+            char[] p10 = new char[10];
             //char[] returnKey = new char [16];
             bool validKey = false;
 
-            while (!validKey)
+            while (!validKey) //stays in the loop until the user enters a valid 10 bit key
             {
                 validKey = true;
                 input = Console.ReadLine();
@@ -386,16 +437,20 @@ namespace homework2
                         p10[8] = input[7];
                         p10[9] = input[5]; //p10
 
-                        char[] ls1LSB = {p10[1], p10[2],p10[3],p10[4],p10[0]};
-                        char[] ls1MSB = {p10[6], p10[7],p10[8],p10[9],p10[5]};
+                        char[] ls1LSB = { p10[1], p10[2], p10[3], p10[4], p10[0] };
+                        char[] ls1MSB = { p10[6], p10[7], p10[8], p10[9], p10[5] }; //LS-1's
 
-                        key1 = new char[] { ls1MSB[0], ls1LSB[2], ls1LSB[1], ls1LSB[3], ls1MSB[2], ls1MSB[0], ls1MSB[4],ls1MSB[3] };
+                        key1 = new char[] { ls1MSB[0], ls1LSB[2], ls1MSB[1], ls1LSB[3], ls1MSB[2], ls1LSB[4], ls1MSB[4], ls1MSB[3] }; //P8
 
-                        char[] ls2LSB = { ls1LSB[2], ls1LSB[3],ls1LSB[4],ls1LSB[0],ls1LSB[1] };
-                        char[] ls2MSB = { ls1MSB[2], ls1MSB[3],ls1MSB[4],ls1MSB[0],ls1MSB[1] };
+                        char[] ls2LSB = { ls1LSB[2], ls1LSB[3], ls1LSB[4], ls1LSB[0], ls1LSB[1] };
+                        char[] ls2MSB = { ls1MSB[2], ls1MSB[3], ls1MSB[4], ls1MSB[0], ls1MSB[1] }; //LS-2's
 
-                        key2 = new char[] { ls2MSB[0], ls2LSB[2], ls2MSB[1], ls2LSB[3], ls2MSB[2], ls2MSB[0], ls2MSB[4], ls2MSB[3] };
-                        //returnKey = {key1, key2}; 
+                        key2 = new char[] { ls2MSB[0], ls2LSB[2], ls2MSB[1], ls2LSB[3], ls2MSB[2], ls2MSB[0], ls2MSB[4], ls2MSB[3] }; //P8
+                        Console.WriteLine("KEY 1: ");
+                        Console.WriteLine(key1);
+                        Console.WriteLine("KEY 2: ");
+                        Console.WriteLine(key2);
+                        Console.WriteLine("\n");
                     }
                 }
                 else
@@ -405,6 +460,16 @@ namespace homework2
                 }
             }
         }
+        /**********************************************************************
+        * Purpose: Validates the user defined 8 bit number
+        *
+        * Precondition:
+        *     none
+        *
+        * Postcondition:
+        *   returns the valid 8 bit number inputted by the user.
+        *
+        ************************************************************************/
         public static char[] ValidateNum()
         {
             string input = "";
@@ -415,15 +480,15 @@ namespace homework2
             while (!validNum)
             {
                 validNum = true;
-                input = Console.ReadLine();
+                input = Console.ReadLine(); //read in 8bits
                 bool isParsable = int.TryParse(input, out _);
 
-                if (isParsable && input.Length == 8) //is the input a: 10 character string
+                if (isParsable && input.Length == 8) //is the input a: 8 character string
                 {                                       //that has only numbers
                     num = input.ToCharArray();
                     for (int ii = 0; ii < 8; ii++)
                     {
-                        if (!num[ii].Equals('1') && !num[ii].Equals('0'))
+                        if (!num[ii].Equals('1') && !num[ii].Equals('0')) //if it isn't a 1 and it isn't a 0, num isn't valid.
                         {
                             validNum = false;
                         }
@@ -440,7 +505,7 @@ namespace homework2
                     Console.WriteLine("Invalid. Enter an 8 bit binary number containing 1's and 0's.\n");
                 }
             }
-            return num;
+            return num; //return the num if its valid
         }
     }
 }
