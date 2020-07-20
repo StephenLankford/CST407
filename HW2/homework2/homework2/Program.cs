@@ -19,48 +19,56 @@ namespace homework2
         //variables
         public static char[] key1 = new char[8];
         public static char[] key2 = new char[8];
+        public static char[] userTxtArray = new char[8];
 
-        int[,] s0 = new int[4, 4] { { 1, 0, 3, 2 },
+        static int[,] s0 = new int[4, 4] { { 1, 0, 3, 2 },
                                     { 3, 2, 1, 0 },
                                     { 0, 2, 1, 3 },
-                                    { 3, 1, 3, 2 }  }; //2D 
-        int[,] s1 = new int[4, 4] { { 0, 1, 2, 3 },
+                                    { 3, 1, 3, 2 }  }; //2D These are the S boxes for the Fk function
+        static int[,] s1 = new int[4, 4] { { 0, 1, 2, 3 },
                                     { 2, 0, 1, 3 },
                                     { 3, 0, 1, 0 },
                                     { 2, 1, 0, 3 }  }; //2D 
 
         public static void Main(string[] args)
         {
-            //char[] key1 = new char[8];
-            //char[] key2 = new char[8];
             string input = "";
 
-            bool validInput = false;
+            bool quit = false; //used to determine when the program quits
 
             Console.WriteLine("Enter a key: ");
+            //string userTxt = "";
             KeyGen(key1, key2);
-            validInput = false;
+            quit = false;
 
-            while (!validInput)
+            while (!quit)
             {
                 Console.WriteLine("encrypt, decrypt, or quit: ");
                 input = Console.ReadLine();
 
-                if (input.Contains("encrypt") ^ input.Contains("decrypt") && !input.Contains("quit"))
+                if (input.Contains("encrypt"))
+                {
+                    Console.WriteLine("Type a binary 8 bit number to convert: ");
+                    userTxtArray = ValidateNum();
+                    Encryption(userTxtArray);
+                }
+                else if (input.Contains("decrypt"))
                 {
 
                 }
-
-
+                else if (input.Contains("quit"))
+                {
+                    quit = true;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid selection.");
+                }
 
             }
-
-
-
-
         }
 
-        public void Encryption(char[] input)   //by reference or by value?
+        public static void Encryption(char[] input)   //by reference or by value?
         {
             char[] left = { input[0], input[1], input[2], input[3] };   //left most 4 bits of plaintext
             char[] right = { input[4], input[5], input[6], input[7] };  //right most 4 bits of plaintext
@@ -83,14 +91,36 @@ namespace homework2
             //next call?
             Console.WriteLine(IPinverse(left, right));
         }
+        public static void Decryption(char[] input)   //by reference or by value?
+        {
+            char[] left = { input[0], input[1], input[2], input[3] };   //left most 4 bits of plaintext
+            char[] right = { input[4], input[5], input[6], input[7] };  //right most 4 bits of plaintext
 
-        public char[] IPinverse(char[] l, char[] m)
+            //IP
+            left[0] = input[1];
+            left[1] = input[5];
+            left[2] = input[2];
+            left[3] = input[0];
+            right[0] = input[3];
+            right[1] = input[7];
+            right[2] = input[4];
+            right[3] = input[6];
+
+            //call FK
+            FK(ref right, ref left);    //ref needed
+            //Switch(ref left, ref right);  //just switch the variables
+            FK(ref left, ref right);    //inverse IP created
+
+            //next call?
+            Console.WriteLine(IPinverse(left, right));
+        }
+        public static char[] IPinverse(char[] l, char[] m)
         {
             char[] inverseIP = new char[8] { l[3], l[0], l[2], m[1], m[3], l[1], m[3], m[2] };
             return inverseIP;
         }
 
-        public void FK(ref char[] l, ref char[] m)
+        public static void FK(ref char[] l, ref char[] m)
         {
             
             //expansion/permutation
@@ -303,7 +333,7 @@ namespace homework2
 
         }
 
-        public void Switch(ref char[] l, ref char[] r)
+        public static void Switch(ref char[] l, ref char[] r)
         {
             char[] tempR = { l[0], l[1], l[2], l[3] };
             char[] tempL = { r[0], r[1], r[2], r[3] };
@@ -374,6 +404,43 @@ namespace homework2
                     Console.WriteLine("Invalid. Enter a key. A key is 10 bit number containing 1's and 0's.\n");
                 }
             }
+        }
+        public static char[] ValidateNum()
+        {
+            string input = "";
+            //char[] returnKey = new char [16];
+            char[] num = new char[8];
+            bool validNum = false;
+
+            while (!validNum)
+            {
+                validNum = true;
+                input = Console.ReadLine();
+                bool isParsable = int.TryParse(input, out _);
+
+                if (isParsable && input.Length == 8) //is the input a: 10 character string
+                {                                       //that has only numbers
+                    num = input.ToCharArray();
+                    for (int ii = 0; ii < 8; ii++)
+                    {
+                        if (!num[ii].Equals('1') && !num[ii].Equals('0'))
+                        {
+                            validNum = false;
+                        }
+                    }
+                    if (validNum == false)
+                    {
+                        //validNum = false;
+                        Console.WriteLine("Invalid. Enter an 8 bit binary number containing 1's and 0's.\n");
+                    }
+                }
+                else
+                {
+                    validNum = false;
+                    Console.WriteLine("Invalid. Enter an 8 bit binary number containing 1's and 0's.\n");
+                }
+            }
+            return num;
         }
     }
 }
