@@ -107,7 +107,7 @@ namespace homework2
             right[3] = input[6];
 
             FK(ref right, ref left, true);    //ref needed, key 1 used first for encrypt
-            FK(ref left, ref right, false);    //inverse IP created, key 2 used second for encrypt
+            FK(ref right, ref left, false);    //inverse IP created, key 2 used second for encrypt
 
             //next call?
             Console.WriteLine(IPinverse(right, left));
@@ -139,7 +139,7 @@ namespace homework2
             right[3] = input[6];
 
             FK(ref right, ref left, false);    //ref needed, use key 2 first for decrypt
-            FK(ref left, ref right, true);    //inverse IP created, use key 1 second for decrypt
+            FK(ref right, ref left, true);    //inverse IP created, use key 1 second for decrypt
 
             //next call?
             Console.WriteLine("Result: ",IPinverse(right, left), "\n");
