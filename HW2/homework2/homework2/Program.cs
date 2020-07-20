@@ -146,7 +146,7 @@ namespace homework2
         }
         public static char[] IPinverse(char[] l, char[] m)
         {
-            char[] inverseIP = new char[8] { l[3], l[0], l[2], m[1], m[3], l[1], m[3], m[2] };
+            char[] inverseIP = new char[8] { l[3], l[0], l[2], m[0], m[2], l[1], m[3], m[1] };
             return inverseIP;
         }
         /**********************************************************************
