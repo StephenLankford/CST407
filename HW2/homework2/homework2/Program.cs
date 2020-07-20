@@ -60,13 +60,13 @@ namespace homework2
 
                 if (input.Contains("encrypt"))
                 {
-                    Console.WriteLine("Type a binary 8 bit number to convert: ");
+                    Console.WriteLine("\nType a binary 8 bit number to convert: ");
                     userTxtArray = ValidateNum();
                     Encryption(userTxtArray);
                 }
                 else if (input.Contains("decrypt"))
                 {
-                    Console.WriteLine("Type a binary 8 bit number to convert: ");
+                    Console.WriteLine("\nType a binary 8 bit number to convert: ");
                     userTxtArray = ValidateNum();
                     Decryption(userTxtArray);
                 }
@@ -110,6 +110,7 @@ namespace homework2
             FK(ref right, ref left, false);    //inverse IP created, key 2 used second for encrypt
 
             //next call?
+            Console.WriteLine("\nResult: ");
             Console.WriteLine(IPinverse(right, left));
         }
         /**********************************************************************
@@ -142,6 +143,7 @@ namespace homework2
             FK(ref right, ref left, true);    //inverse IP created, use key 1 second for decrypt
 
             //next call?
+            Console.WriteLine("\nResult: ");
             Console.WriteLine(IPinverse(right, left));
         }
         public static char[] IPinverse(char[] l, char[] m)
@@ -160,10 +162,10 @@ namespace homework2
         *      alters the 8 bits (since the lsb and msb are passed by reference, no return)
         *
         ************************************************************************/
-        public static void FK(ref char[] l, ref char[] m, bool encryptFlag)
+        public static void FK(ref char[] l, ref char[] r, bool encryptFlag)
         {
             //expansion/permutation
-            char[] EP1 = { m[3], m[0], m[1], m[2], m[1], m[2], m[3], m[0] };
+            char[] EP1 = { r[3], r[0], r[1], r[2], r[1], r[2], r[3], r[0] };
 
             //variables
             char[] P4 = { '0', '0', '0', '0' };
