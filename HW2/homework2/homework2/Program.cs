@@ -372,20 +372,21 @@ namespace homework2
             }
 
             // permutate (actual p4)
-            m[0] = P4[1];
-            m[1] = P4[3];
-            m[2] = P4[2];
-            m[3] = P4[0];
+            char[] temp = new char[4];
+            temp[0] = P4[1];
+            temp[1] = P4[3];
+            temp[2] = P4[2];
+            temp[3] = P4[0];
 
             for (int ii = 0; ii < 3; ii++) //add msbits to p4 result
             {
-                if (l[ii] == m[ii])
+                if (m[ii] == temp[ii])
                 {
-                    l[ii] = '0';
+                    m[ii] = '0';
                 }
                 else
                 {
-                    l[ii] = '1';
+                    m[ii] = '1';
                 }
             }
 
