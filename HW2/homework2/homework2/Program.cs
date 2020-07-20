@@ -106,7 +106,7 @@ namespace homework2
             right[2] = input[4];
             right[3] = input[6];
 
-            FK(ref right, ref left, true);    //ref needed, key 1 used first for encrypt
+            FK(ref left, ref right, true);    //ref needed, key 1 used first for encrypt
             FK(ref right, ref left, false);    //inverse IP created, key 2 used second for encrypt
 
             //next call?
@@ -138,7 +138,7 @@ namespace homework2
             right[2] = input[4];
             right[3] = input[6];
 
-            FK(ref right, ref left, false);    //ref needed, use key 2 first for decrypt
+            FK(ref left, ref right, false);    //ref needed, use key 2 first for decrypt
             FK(ref right, ref left, true);    //inverse IP created, use key 1 second for decrypt
 
             //next call?
@@ -378,15 +378,15 @@ namespace homework2
             temp[2] = P4[2];
             temp[3] = P4[0];
 
-            for (int ii = 0; ii < 3; ii++) //add msbits to p4 result
+            for (int ii = 0; ii < 4; ii++) //add msbits to p4 result
             {
-                if (m[ii] == temp[ii])
+                if (l[ii] == temp[ii])
                 {
-                    m[ii] = '0';
+                    l[ii] = '0';
                 }
                 else
                 {
-                    m[ii] = '1';
+                    l[ii] = '1';
                 }
             }
 
