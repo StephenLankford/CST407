@@ -461,7 +461,7 @@ namespace homework2
                         char[] ls2LSB = { ls1LSB[2], ls1LSB[3], ls1LSB[4], ls1LSB[0], ls1LSB[1] };
                         char[] ls2MSB = { ls1MSB[2], ls1MSB[3], ls1MSB[4], ls1MSB[0], ls1MSB[1] }; //LS-2's
 
-                        key2 = new char[] { ls2MSB[0], ls2LSB[2], ls2MSB[1], ls2LSB[3], ls2MSB[2], ls2MSB[0], ls2MSB[4], ls2MSB[3] }; //P8
+                        key2 = new char[] { ls2MSB[0], ls2LSB[2], ls2MSB[1], ls2LSB[3], ls2MSB[2], ls2LSB[4], ls2MSB[4], ls2MSB[3] }; //P8
                         //Console.WriteLine();
                         Console.Write("KEY 1: ");
                         Console.WriteLine(key1);
