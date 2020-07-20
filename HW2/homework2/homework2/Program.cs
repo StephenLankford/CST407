@@ -142,7 +142,7 @@ namespace homework2
             FK(ref right, ref left, true);    //inverse IP created, use key 1 second for decrypt
 
             //next call?
-            Console.WriteLine("Result: ",IPinverse(right, left), "\n");
+            Console.WriteLine(IPinverse(right, left));
         }
         public static char[] IPinverse(char[] l, char[] m)
         {
