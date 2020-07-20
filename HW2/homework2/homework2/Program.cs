@@ -334,48 +334,48 @@ namespace homework2
             switch (s0result)   //generate p4 input
             {
                 case 0:
-                    P4[0] = '0';
                     P4[1] = '0';
+                    P4[0] = '0';
                     break;
                 case 1:
-                    P4[0] = '0';
-                    P4[1] = '1';
+                    P4[1] = '0';
+                    P4[0] = '1';
                     break;
                 case 2:
-                    P4[0] = '1';
-                    P4[1] = '0';
+                    P4[1] = '1';
+                    P4[0] = '0';
                     break;
                 case 3:
-                    P4[0] = '1';
                     P4[1] = '1';
+                    P4[0] = '1';
                     break;
             }
 
             switch (s1result)   //create p4
             {
                 case 0:
-                    P4[2] = '0';
                     P4[3] = '0';
+                    P4[2] = '0';
                     break;
                 case 1:
-                    P4[2] = '0';
-                    P4[3] = '1';
+                    P4[3] = '0';
+                    P4[2] = '1';
                     break;
                 case 2:
-                    P4[2] = '1';
-                    P4[3] = '0';
+                    P4[3] = '1';
+                    P4[2] = '0';
                     break;
                 case 3:
-                    P4[2] = '1';
                     P4[3] = '1';
+                    P4[2] = '1';
                     break;
             }
 
             // permutate (actual p4)
-            l[0] = P4[1];
-            l[1] = P4[3];
-            l[2] = P4[2];
-            l[3] = P4[0];
+            m[0] = P4[1];
+            m[1] = P4[3];
+            m[2] = P4[2];
+            m[3] = P4[0];
 
             for (int ii = 0; ii < 3; ii++) //add msbits to p4 result
             {
