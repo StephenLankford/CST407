@@ -26,5 +26,36 @@ namespace Blowfish
         {
             this.InitializeComponent();
         }
+
+        private void EncryptClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: Encrypt program logic here
+        }
+
+        private void DecryptClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: Decrypt program logic here
+        }
+
+        private void RestartClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: Restart program logic here
+        }
+
+        private void ExitClick(object sender, RoutedEventArgs e)    //exit program code
+        {
+            Application.Current.Exit();
+        }
+
+        private async void HelpClick(object sender, RoutedEventArgs e)  //help menu code
+        {
+            ContentDialog aboutDialog = new ContentDialog()
+            {
+                Title = "About Blowfish",
+                Content = "Authors: Hayden Hutsell and Stephen Lankford, Summer 2020",
+                CloseButtonText = "Ok"
+            };
+            await aboutDialog.ShowAsync();
+        }
     }
 }
