@@ -1,4 +1,19 @@
-﻿using System;
+﻿/****************************************************************************************************************
+ * Author(s): Hayden Hutsell and Stephen Lankford
+ * Filename: MainPage.xaml.cs
+ * Title of Project: Blowfish - Final Project for CST407: Cryptography (Summer 2020)
+ * Start Date: 08/04/2020
+ * Modifications: 08/04/2020 - created basic GUI with click buttons, declared functions for clicks
+ *                08/06/2020 - coded some encryption/decryption logic
+ *                08/07/2020 - 
+ ***************************************************************************************************************/
+
+/****************************************************************************************************************
+*   The Blowfish algorithm is symmetric - same key for encryption and decryption
+*   Blowfish is a 64-bit block cipher with a variable-length key (up to 448 bits). 
+****************************************************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,7 +41,7 @@ namespace Blowfish
         {
             this.InitializeComponent();
         }
-
+        
         private void EncryptClick(object sender, RoutedEventArgs e)
         {
             //TODO: Encrypt program logic here
@@ -39,32 +54,47 @@ namespace Blowfish
             //f is a function, x being the input to it. The function is on the following line
             //uint32_t h = S[0][x >> 24] + S[1][x >> 16 & 0xff];
             //return (h ^ S[2][x >> 8 & 0xff]) + S[3][x & 0xff]
-            for (int ii = 0; ii < 16; ii += 2)
-            {
-                L ^= P[ii];
-                R ^= f(L);
-                R ^= P[ii + 1];
-                L ^= f(R);
-            }
-            L ^= P[16];
-            R ^= P[17];
-            //swap L and R here
+            //for (int ii = 0; ii < 16; ii += 2)
+            //{
+            //    L ^= P[ii];
+            //    R ^= f(L);
+            //    R ^= P[ii + 1];
+            //    L ^= f(R);
+            //}
+            //L ^= P[16];
+            //R ^= P[17];
+            //swap L and R  herefdsaf
         }
 
         private void DecryptClick(object sender, RoutedEventArgs e)
         {
             //TODO: Decrypt program logic here
             //same issues apply in the encrypt function with the p array, f, and user input
-            for (int ii = 0; ii < 16; ii += 2)
-            {
-                L ^= P[ii + 1];
-                R ^= f(L);
-                R ^= P[ii];
-                L ^= f(R);
-            }
-            L ^= P[1];
-            R ^= P[0];
+            //for (int ii = 0; ii < 16; ii += 2)
+            //{
+            //    L ^= P[ii + 1];
+            //    R ^= f(L);
+            //    R ^= P[ii];
+            //    L ^= f(R);
+            //}
+            //L ^= P[1];
+            //R ^= P[0];
             //swap L and R
+        }
+
+        private void AcceptKeyClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: function for reading in key entered by user
+        }
+
+        private void AcceptPlainClick (object sender, RoutedEventArgs e)
+        {
+            //TODO: function for reading in plaintext entered by user
+        }
+
+        private void AcceptCipherClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: function for reading in ciphertext entered by user
         }
 
         private void RestartClick(object sender, RoutedEventArgs e)
@@ -76,6 +106,8 @@ namespace Blowfish
         {
             Application.Current.Exit();
         }
+
+        //private 
 
         private async void HelpClick(object sender, RoutedEventArgs e)  //help menu code
         {
