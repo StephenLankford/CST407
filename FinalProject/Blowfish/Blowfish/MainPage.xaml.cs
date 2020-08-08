@@ -258,7 +258,33 @@ namespace Blowfish
             *dataL = dataLTemp;
             *dataR = dataRTemp;
         }
+        private unsafe void Decipher(uint* dataL, uint* dataR)
+        {
+            uint dataLTemp = *dataL;
+            uint dataRTemp = *dataR;                         
+            uint temp = 0;
+            dataLTemp = *dataL;
+            dataRTemp = *dataR;
 
+            for (int ii = 17; ii > 1; ii--)
+            {
+                dataLTemp ^= P[ii];
+                dataRTemp ^= FFunction(dataLTemp);
+                temp = dataLTemp;
+                dataLTemp = dataRTemp;
+                dataRTemp = temp;
+            }
+            temp = dataLTemp;
+            dataLTemp = dataRTemp;
+            dataRTemp = temp;
+
+            dataRTemp ^= P[1];
+            dataLTemp ^= P[0];
+
+            *dataL = dataLTemp;
+            *dataR = dataRTemp;
+
+        }
         /**********************************************************************
         * Purpose: 
         *
