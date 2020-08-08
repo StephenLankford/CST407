@@ -8,15 +8,19 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid BorderBrush="Gray" BorderThickness="5">
+    <Grid BorderBrush="Gray" BorderThickness="5" Background="CornflowerBlue">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <MenuBar BorderBrush="Gray" BorderThickness="5" Grid.Row="0">
+        <MenuBar BorderBrush="Gray" BorderThickness="5" Grid.Row="0" Background="CadetBlue" Grid.ColumnSpan="3">
             <MenuBarItem Title="Encrypt">
                 <MenuFlyoutItem Text="Start" Click="EncryptClick"/>
             </MenuBarItem>
@@ -33,6 +37,18 @@
                 <MenuFlyoutItem Text="About" Click="HelpClick"/>
             </MenuBarItem>
         </MenuBar>
-        <Canvas x:Name="myCanvas" Background="White" Grid.Row="1"/>
+        <TextBox AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="172" Width="300" Header="Key Entry"
+         ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="0" Grid.Row="1"/>
+        <Button Grid.Row="2" Grid.Column="0" Content="Accept Key" Click="AcceptKeyClick"/>
+
+        <TextBox AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="172" Width="300" Header="Plaintext"
+         ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="1" Grid.Row="1"/>
+        <Button Grid.Row="2" Grid.Column="1" Content="Accept Plaintext" Click="AcceptPlainClick"/>
+
+        <TextBox AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="172" Width="300" Header="Ciphertext"
+         ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="2" Grid.Row="1"/>
+        <Button Grid.Row="2" Grid.Column="2" Content="Accept Ciphertext" Click="AcceptCipherClick"/>
+
     </Grid>
+
 </Page>
