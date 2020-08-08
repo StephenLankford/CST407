@@ -146,6 +146,21 @@ namespace Blowfish
             //TODO: function for reading in ciphertext entered by user
         }
 
+        private void FileKeyClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: function for reading in ciphertext entered by user
+        }
+
+        private void FilePlainClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: function for reading in ciphertext entered by user
+        }
+
+        private void FileCipherClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: function for reading in ciphertext entered by user
+        }
+
         private void RestartClick(object sender, RoutedEventArgs e)
         {
             //TODO: Restart program logic here
