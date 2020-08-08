@@ -39,18 +39,21 @@
                 <MenuFlyoutItem Text="About" Click="HelpClick"/>
             </MenuBarItem>
         </MenuBar>
-        
-        <TextBox AcceptsReturn="True" TextWrapping="Wrap" Height="250" Width="600" Header="Key Entry"
+
+        <TextBlock Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Height="40" Grid.ColumnSpan="3" 
+                   Name="Message" Foreground="Firebrick" FontSize="20" FontFamily="Times New Roman"/>
+
+        <TextBox AcceptsReturn="True" TextWrapping="Wrap" Height="250" Width="600" Header="Key Entry" Name="textKey"
          ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right"  VerticalAlignment="Stretch"/>
         <Button Grid.Row="1" Grid.Column="0" Content="Upload Key From Text File" HorizontalAlignment="Center" VerticalAlignment="Bottom" Click="FileKeyClick"/>
         <Button Grid.Row="1" Grid.Column="0" Content="Accept Key" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="AcceptKeyClick"/>
 
-        <TextBox AcceptsReturn="True" TextWrapping="Wrap" Height="250" Width="600" Header="Plaintext"
+        <TextBox AcceptsReturn="True" TextWrapping="Wrap" Height="250" Width="600" Header="Plaintext" Name="textPlain"
          ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
         <Button Grid.Row="1" Grid.Column="1" Content="Upload Plaintext From Text File" HorizontalAlignment="Center" VerticalAlignment="Bottom" Click="FilePlainClick"/>
         <Button Grid.Row="1" Grid.Column="1" Content="Accept Plaintext" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="AcceptPlainClick"/>
 
-        <TextBox AcceptsReturn="True" TextWrapping="Wrap" Height="250" Width="600" Header="Ciphertext"
+        <TextBox AcceptsReturn="True" TextWrapping="Wrap" Height="250" Width="600" Header="Ciphertext" Name="textCipher"
          ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch"/>
         <Button Grid.Row="1" Grid.Column="2" Content="Upload Ciphertext From Text File" HorizontalAlignment="Center" VerticalAlignment="Bottom" Click="FileCipherClick"/>
         <Button Grid.Row="1" Grid.Column="2" Content="Accept Ciphertext" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="AcceptCipherClick"/>

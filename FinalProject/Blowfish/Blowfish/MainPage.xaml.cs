@@ -1,20 +1,36 @@
 ﻿/****************************************************************************************************************
  * Author(s): Hayden Hutsell and Stephen Lankford
  * Filename: MainPage.xaml.cs
- * Title of Project: Blowfish - Final Project for CST407: Cryptography (Summer 2020)
- * Start Date: 08/04/2020
- * Modifications: 08/04/2020 - created basic GUI with click buttons, declared functions for clicks
+ * Date Created: 08/04/2020
+ * Modifications: 08/04/2020 - created basic GUI with click buttons in XAML, declared functions for clicks
  *                08/06/2020 - coded some encryption/decryption logic
- *                08/07/2020 - 
+ *                08/07/2020 - finished basic GUI design and functionality in XAML, 
  ***************************************************************************************************************/
 
 /****************************************************************************************************************
+*
+* Lab/Assignment: CST407 - Cryptography: Final Project - Blowfish
+*
+* Overview:
 *   The Blowfish algorithm is symmetric - same key for encryption and decryption
-*   Blowfish is a 64-bit block cipher with a variable-length key (up to 448 bits). 
+*   Blowfish is a 64-bit block cipher with a variable-length key (up to 448 bits or 56 bytes).
+*   
+* Input: 
+*   Text files or text input from user for key, plaintext, and/or ciphertext
+*   Button clicks for accepting user input of key, plaintext, and/or ciphertext
+*   Button clicks for selecting text files for key, plaintext, and/or ciphertext
+*   Menu bar flyout items (clickable) for starting encryption, decryption, restarting the program, exiting the 
+*       program, or displaying the help menu
+*
+* Output:
+*   Ciphertext if Encryption, Plaintext if Decryption
+*
 ****************************************************************************************************************/
 
 using System;
+using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -38,10 +54,18 @@ namespace Blowfish
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public MainPage()
-        {
-            this.InitializeComponent();
-        }
+        /************************************************************************
+        * Class: 
+        *
+        * Purpose: 
+        *
+        * Manager functions:
+        * 
+        *
+        * Methods:
+        * 
+        *************************************************************************/
+
         private bool keys_generated = false;
         private uint[] S0;
         private uint[] S1;
@@ -52,9 +76,33 @@ namespace Blowfish
 
         private byte[] key;
 
+        //these variables can be used by any function in the class
+        //they are for accessing input from the user or files the user chooses
+        private string userKey;     //string for storing key - from text box or file
+        private string userPlain;   //string for storing plaintext - from text box or file
+        private string userCipher;  //string for storing ciphertext - from text box or file
 
+        /**********************************************************************
+        * Purpose: Start the application
+        *
+        * Precondition: N/A
+        *
+        * Postcondition: Application booted up and ready for user input
+        *
+        ************************************************************************/
+        public MainPage()
+        {
+            this.InitializeComponent();
+        }
 
-        
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private void EncryptClick(object sender, RoutedEventArgs e)
         {
             //TODO: Encrypt program logic here
@@ -79,6 +127,14 @@ namespace Blowfish
             //swap L and R  herefdsaf
         }
 
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private void DecryptClick(object sender, RoutedEventArgs e)
         {
             //TODO: Decrypt program logic here
@@ -94,9 +150,18 @@ namespace Blowfish
             //R ^= P[0];
             //swap L and R
         }
+
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private void KeysClick(object sender, RoutedEventArgs e)
         {
-            int data = 0x0;
+            uint data = 0x0;
             S0 = SetupS0();
             S1 = SetupS1();
             S2 = SetupS2();
@@ -105,8 +170,15 @@ namespace Blowfish
 
           
             //however we access the text field, ill call it userKey
-            byte[] userKey = {0};//text input placeholder~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+            //byte[] userKey = {0};//text input placeholder~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            if (userKey != null)
+            {
+                byte[] userByteKey = Encoding.ASCII.GetBytes(userKey);
+            }
+            else
+            {
+                return;
+            }
             while (userKey.Length > 56)
             { 
                 //key can't be >56, re enter key
@@ -126,50 +198,303 @@ namespace Blowfish
                         jj = 0;
                     }
                 }
-                
+                P[ii] ^= data;
+            }
+            uint dataL = 0;
+            uint dataR = 0;
+
+            for (int ii = 0; ii < 18; ii += 2)
+            {
+                unsafe
+                {
+                    Encipher(&dataL, &dataR);
+                }
+                P[ii] = dataL;
+                P[ii + 1] = dataR;
             }
 
+          
+            for (int cc = 0; cc < 256; cc += 2)
+            {
+                S0[cc] = dataL;
+                S0[cc + 1] = dataR;
+                S1[cc] = dataL;
+                S1[cc + 1] = dataR;
+                S2[cc] = dataL;
+                S2[cc + 1] = dataR;
+                S3[cc] = dataL;
+                S3[cc + 1] = dataR;
+            }
         }
-  
+
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
+        private unsafe void Encipher(uint* dataL, uint* dataR) //COME BACK TO ADDRESS UNSAFE keyword
+        {
+            uint dataLTemp = *dataL;
+            uint dataRTemp = *dataR;                         //note: unsafe in this case doesn't introduce a glaring security threat
+            uint temp = 0;
+            for (int ii = 0; ii < 16; ii++)                 //as this data is on the SENDER, so an exposed dataL or dataR isn't the end of the world
+            {
+                dataLTemp ^= P[ii];
+                dataRTemp ^= FFunction(dataLTemp);
+
+                temp = dataLTemp;
+                dataLTemp = dataRTemp;
+                dataRTemp = temp;
+            }
+            temp = dataLTemp;
+            dataLTemp = dataRTemp;
+            dataRTemp = temp;
+
+            dataRTemp ^= P[16];
+            dataLTemp ^= P[17];
+            *dataL = dataLTemp;
+            *dataR = dataRTemp;
+        }
+
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
+        private uint FFunction(uint dataInput)
+        {
+            uint h = S0[dataInput >> 24] + S1[dataInput >> 16 & 0xff];
+            return (h ^ S2[dataInput >> 8 & 0xff]) + S3[dataInput & 0xff];
+        //TODO: function for reading in key entered by user
+        }
+
+        /**********************************************************************
+        * Purpose: Accept or decline text input by user for key upon button click
+        *
+        * Precondition: User clicks 'Accept Key' button
+        *
+        * Postcondition: 
+        *
+        ************************************************************************/
         private void AcceptKeyClick(object sender, RoutedEventArgs e)
         {
-            //TODO: function for reading in key entered by user
+            userKey = textKey.Text;
+            if (userKey.Length > 56 || userKey.Length < 1 || userKey == null)
+            {
+                //display to error message text box
+                Message.Text = "ERROR: The key entry must be 1-56 characters long!!!";
+                userKey = null;
+            }
+            else
+            {
+                Message.Text = "MESSAGE: Key Accepted!";
+            }
         }
 
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private void AcceptPlainClick (object sender, RoutedEventArgs e)
         {
-            //TODO: function for reading in plaintext entered by user
+            Message.Text = "";
+            userPlain = textPlain.Text;
+            if (userPlain.Length < 1 || userPlain == null)
+            {
+                Message.Text = "ERROR: The plaintext entry must be greater than or equal to 1 character long!!!";
+                userPlain = null;
+            }
+            else
+            {
+                Message.Text = "MESSAGE: Plaintext Accepted!";
+            }
         }
 
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private void AcceptCipherClick(object sender, RoutedEventArgs e)
         {
-            //TODO: function for reading in ciphertext entered by user
+            Message.Text = "";
+            userCipher = textCipher.Text;
+            if (userCipher.Length < 1 || userCipher == null)
+            {
+                Message.Text = "ERROR: The ciphertext entry must be greater than or equal to 1 character long!!!";
+                userCipher = null;
+            }
+            else
+            {
+                Message.Text = "MESSAGE: Ciphertext Accepted!";
+            }
         }
 
-        private void FileKeyClick(object sender, RoutedEventArgs e)
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
+        private async void FileKeyClick(object sender, RoutedEventArgs e)
         {
-            //TODO: function for reading in ciphertext entered by user
+            Message.Text = "";
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            picker.FileTypeFilter.Add(".txt");
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                userKey = await Windows.Storage.FileIO.ReadTextAsync(file);
+                textKey.Text = userKey;
+            }
+            else
+            {
+                userKey = null;
+            }
+
+            if (userKey.Length > 56 || userKey.Length < 1 || userKey == null)
+            {
+                //disply error in error message text box
+                Message.Text = "ERROR: The key must be 1-56 characters long!!!";
+                userKey = null;
+            }
+            else
+            {
+                Message.Text = "MESSAGE: Key Accepted!";
+            }
         }
 
-        private void FilePlainClick(object sender, RoutedEventArgs e)
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
+        private async void FilePlainClick(object sender, RoutedEventArgs e)
         {
-            //TODO: function for reading in ciphertext entered by user
+            Message.Text = "";
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            picker.FileTypeFilter.Add(".txt");
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                userPlain = await Windows.Storage.FileIO.ReadTextAsync(file);
+                textPlain.Text = userPlain;
+            }
+            else
+            {
+                userPlain = null;
+            }
+
+            if (userPlain.Length < 1 || userPlain == null)
+            {
+                Message.Text = "ERROR: The plaintext entry must be greater than or equal to 1 character long!!!";
+                userPlain = null;
+            }
+            else
+            {
+                Message.Text = "MESSAGE: Plaintext Accepted!";
+            }
         }
 
-        private void FileCipherClick(object sender, RoutedEventArgs e)
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
+        private async void FileCipherClick(object sender, RoutedEventArgs e)
         {
-            //TODO: function for reading in ciphertext entered by user
+            Message.Text = "";
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            picker.FileTypeFilter.Add(".txt");
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                userCipher = await Windows.Storage.FileIO.ReadTextAsync(file);
+                textCipher.Text = userCipher;
+            }
+            else
+            {
+                userCipher = null;
+            }
+
+            if (userCipher.Length < 1 || userCipher == null)
+            {
+                Message.Text = "ERROR: The ciphertext entry must be greater than or equal to 1 character long!!!";
+                userCipher = null;
+            }
+            else
+            {
+                Message.Text = "MESSAGE: Ciphertext Accepted!";
+            }
         }
 
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private void RestartClick(object sender, RoutedEventArgs e)
         {
-            //TODO: Restart program logic here
+            userKey = null;
+            userPlain = null;
+            userCipher = null;
+            Message.Text = "";
+            textKey.Text = "";
+            textPlain.Text = "";
+            textCipher.Text = "";
         }
 
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private void ExitClick(object sender, RoutedEventArgs e)    //exit program code
         {
             Application.Current.Exit();
         }
+
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private uint[] SetupS0() //361
         {
             return new uint[] {
@@ -219,6 +544,14 @@ namespace Blowfish
             };
         }
 
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private uint[] SetupS1()
         {
             return new uint[] {
@@ -268,6 +601,14 @@ namespace Blowfish
             };
         }
 
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private uint[] SetupS2()
         {
             return new uint[] {
@@ -316,6 +657,15 @@ namespace Blowfish
                     0xd79a3234,0x92638212,0x670efa8e,0x406000e0
             };
         }
+
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private uint[] SetupS3()
         {
             return new uint[] {
@@ -365,9 +715,14 @@ namespace Blowfish
             };
         }
 
-        //private 
-
-
+        /**********************************************************************
+        * Purpose: 
+        *
+        * Precondition:
+        *
+        * Postcondition:
+        *
+        ************************************************************************/
         private async void HelpClick(object sender, RoutedEventArgs e)  //help menu code
         {
             ContentDialog aboutDialog = new ContentDialog()
