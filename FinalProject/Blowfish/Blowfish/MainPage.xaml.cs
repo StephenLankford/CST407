@@ -5,6 +5,8 @@
  * Modifications: 08/04/2020 - created basic GUI with click buttons in XAML, declared functions for clicks
  *                08/06/2020 - coded some encryption/decryption logic
  *                08/07/2020 - finished basic GUI design and functionality in XAML, 
+ *                08/07/2020 - implemented encipher, key generation from book written by blowfish creator as well
+ *                              as Sbox config, and P array config. Next is decipher, dec, and enc. (easy)
  ***************************************************************************************************************/
 
 /****************************************************************************************************************
@@ -203,15 +205,15 @@ namespace Blowfish
             uint dataL = 0;
             uint dataR = 0;
 
-            for (int ii = 0; ii < 18; ii += 2)
-            {
-                unsafe
-                {
-                    Encipher(&dataL, &dataR);
-                }
-                P[ii] = dataL;
-                P[ii + 1] = dataR;
-            }
+            //for (int ii = 0; ii < 18; ii += 2)
+            //{
+            //    unsafe
+            //    {
+            //        Encipher(&dataL, &dataR);
+            //    }
+            //    P[ii] = dataL;
+            //    P[ii + 1] = dataR;
+            //}
 
           
             for (int cc = 0; cc < 256; cc += 2)
@@ -305,195 +307,215 @@ namespace Blowfish
         *
         * Precondition: User clicks 'Accept Key' button
         *
-        * Postcondition: 
+        * Postcondition: key string set to null if error, otherwise key string
+        *                contains valid key
         *
         ************************************************************************/
         private void AcceptKeyClick(object sender, RoutedEventArgs e)
         {
-            userKey = textKey.Text;
-            if (userKey.Length > 56 || userKey.Length < 1 || userKey == null)
+            Message.Text = "";  //clear message box
+            userKey = textKey.Text;     //read in key text box input
+            if (userKey.Length > 56 || userKey.Length < 1 || userKey == null)   //if invalid key entry
             {
                 //display to error message text box
                 Message.Text = "ERROR: The key entry must be 1-56 characters long!!!";
-                userKey = null;
+                userKey = null; //reset key string
             }
             else
             {
-                Message.Text = "MESSAGE: Key Accepted!";
+                Message.Text = "MESSAGE: Key Accepted!";    //notify user that key was valid
             }
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Accept or decline text input by user for plaintext upon button click
         *
-        * Precondition:
+        * Precondition: User clicks 'Accept Plaintext' button
         *
-        * Postcondition:
+        * Postcondition: plaintext string set to null if error, otherwise plaintext
+        *                string contains valid plaintext
         *
         ************************************************************************/
         private void AcceptPlainClick (object sender, RoutedEventArgs e)
         {
-            Message.Text = "";
-            userPlain = textPlain.Text;
-            if (userPlain.Length < 1 || userPlain == null)
+            Message.Text = "";  //clear message box
+            userPlain = textPlain.Text;     //read in plaintext box input
+            if (userPlain.Length < 1 || userPlain == null)      //if invalid plaintext entry
             {
                 Message.Text = "ERROR: The plaintext entry must be greater than or equal to 1 character long!!!";
-                userPlain = null;
+                userPlain = null;   //reset plaintext string
             }
             else
             {
-                Message.Text = "MESSAGE: Plaintext Accepted!";
+                Message.Text = "MESSAGE: Plaintext Accepted!";  //notify user that plaintext was valid
             }
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Accept or decline text input by user for ciphertext upon button click
         *
-        * Precondition:
+        * Precondition: User clicks 'Accept Ciphertext' button
         *
-        * Postcondition:
+        * Postcondition: ciphertext string set to null if error, otherwise ciphertext
+        *                string contains valid ciphertext
         *
         ************************************************************************/
         private void AcceptCipherClick(object sender, RoutedEventArgs e)
         {
-            Message.Text = "";
-            userCipher = textCipher.Text;
-            if (userCipher.Length < 1 || userCipher == null)
+            Message.Text = "";  //clear message box
+            userCipher = textCipher.Text;       //read in ciphertext box input
+            if (userCipher.Length < 1 || userCipher == null)    //if invalid ciphertext entry
             {
                 Message.Text = "ERROR: The ciphertext entry must be greater than or equal to 1 character long!!!";
-                userCipher = null;
+                userCipher = null;  //reset ciphertext string
             }
             else
             {
-                Message.Text = "MESSAGE: Ciphertext Accepted!";
+                Message.Text = "MESSAGE: Ciphertext Accepted!";     //notify user that ciphertext was valid
             }
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Open file picker dialogue when user clicks 'Upload Key From Text File'
+        *          button, read in file to key string, check for valid key
         *
-        * Precondition:
+        * Precondition: Text file with key exists, user clicks button
         *
-        * Postcondition:
+        * Postcondition: Key string is set to null if invalid or file is empty/error
+        *                Key string is assigned text file contents if valid
         *
         ************************************************************************/
         private async void FileKeyClick(object sender, RoutedEventArgs e)
         {
-            Message.Text = "";
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            Message.Text = "";  //clear message text box
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();  //create file picker variable
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail; //thumbnail mode for dialogue
+            //look for text files in Windows Documents when dialogue opens
             picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            picker.FileTypeFilter.Add(".txt");
-            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
-            if (file != null)
+            picker.FileTypeFilter.Add(".txt");  //only show text files in dialogue
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();  //wait until file picked to proceed with program
+            if (file != null)   //if the file is not empty
             {
-                userKey = await Windows.Storage.FileIO.ReadTextAsync(file);
-                textKey.Text = userKey;
+                userKey = await Windows.Storage.FileIO.ReadTextAsync(file);     //read in text file to key string variable
+                textKey.Text = userKey;     //assign text file contents to key string
             }
             else
-            {
+            {   //file is empty, set key string to null for error checking in other functions
                 userKey = null;
             }
 
-            if (userKey.Length > 56 || userKey.Length < 1 || userKey == null)
+            if (userKey.Length > 56 || userKey.Length < 1 || userKey == null)   //if key from text file is invalid
             {
                 //disply error in error message text box
                 Message.Text = "ERROR: The key must be 1-56 characters long!!!";
-                userKey = null;
+                userKey = null;     //set key string back to null for error checking in other functions
             }
             else
-            {
+            {   //notify user that key from file is good so they can proceed
                 Message.Text = "MESSAGE: Key Accepted!";
             }
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Open file picker dialogue when user clicks 'Upload Plaintext From Text File'
+        *          button, read in file to plaintext string, check for valid plaintext
         *
-        * Precondition:
+        * Precondition: Text file with plaintext exists, user clicks button
         *
-        * Postcondition:
+        * Postcondition: Plaintext string is set to null if invalid or file is empty/error
+        *                Plaintext string is assigned text file contents if valid
         *
         ************************************************************************/
         private async void FilePlainClick(object sender, RoutedEventArgs e)
         {
-            Message.Text = "";
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            Message.Text = "";      //clear message text box
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();  //create file picker variable
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail; //thumbnail mode for dialogue
+            //look for text files in Windows Documents when dialogue opens
             picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            picker.FileTypeFilter.Add(".txt");
-            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
-            if (file != null)
+            picker.FileTypeFilter.Add(".txt");  //only show text files in dialogue
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();  //wait until file picked to proceed with program
+            if (file != null)   //if the file is not empty
             {
-                userPlain = await Windows.Storage.FileIO.ReadTextAsync(file);
-                textPlain.Text = userPlain;
+                userPlain = await Windows.Storage.FileIO.ReadTextAsync(file);   //read in text file to plaintext string variable
+                textPlain.Text = userPlain; //assign text file contents to plaintext string
             }
             else
-            {
+            {   //file is empty, set plaintext string to null for error checking in other functions
                 userPlain = null;
             }
 
-            if (userPlain.Length < 1 || userPlain == null)
+            if (userPlain.Length < 1 || userPlain == null)  //if plaintext from text file is invalid
             {
+                //disply error in error message text box
                 Message.Text = "ERROR: The plaintext entry must be greater than or equal to 1 character long!!!";
-                userPlain = null;
+                userPlain = null;   //set plaintext string back to null for error checking in other functions
             }
             else
-            {
+            {   //notify user that plaintext from file is good so they can proceed
                 Message.Text = "MESSAGE: Plaintext Accepted!";
             }
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Open file picker dialogue when user clicks 'Upload Ciphertext From Text File'
+        *          button, read in file to ciphertext string, check for valid ciphertext
         *
-        * Precondition:
+        * Precondition: Text file with ciphertext exists, user clicks button
         *
-        * Postcondition:
+        * Postcondition: Ciphertext string is set to null if invalid or file is empty/error
+        *                Ciphertext string is assigned text file contents if valid
         *
         ************************************************************************/
         private async void FileCipherClick(object sender, RoutedEventArgs e)
         {
-            Message.Text = "";
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            Message.Text = "";  //clear message text box
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();  //create file picker variable
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail; //thumbnail mode for dialogue
+            //look for text files in Windows Documents when dialogue opens
             picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            picker.FileTypeFilter.Add(".txt");
-            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
-            if (file != null)
+            picker.FileTypeFilter.Add(".txt");  //only show text files in dialogue
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();  //wait until file picked to proceed with program
+            if (file != null)   //if the file is not empty
             {
-                userCipher = await Windows.Storage.FileIO.ReadTextAsync(file);
-                textCipher.Text = userCipher;
+                userCipher = await Windows.Storage.FileIO.ReadTextAsync(file);  //read in text file to ciphertext string variable
+                textCipher.Text = userCipher;   //assign text file contents to ciphertext string
             }
             else
-            {
+            {   //file is empty, set ciphertext string to null for error checking in other functions
                 userCipher = null;
             }
 
-            if (userCipher.Length < 1 || userCipher == null)
+            if (userCipher.Length < 1 || userCipher == null)    //if ciphertext from text file is invalid
             {
+                //diplay error message in message text box
                 Message.Text = "ERROR: The ciphertext entry must be greater than or equal to 1 character long!!!";
-                userCipher = null;
+                userCipher = null;  //set ciphertext string back to null for error checking in other functions
             }
             else
-            {
+            {   //notify user that ciphertext from file is good so they can proceed
                 Message.Text = "MESSAGE: Ciphertext Accepted!";
             }
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Reset all text boxes, text blocks, and variables so user can 
+        *          start app fresh without exiting
         *
-        * Precondition:
+        * Precondition: User clicks Restart -> Restart Program from menu bar
         *
-        * Postcondition:
+        * Postcondition: All variables, text boxes, text blocks are blank, null, 
+        *                reset, set to default, etc.
         *
         ************************************************************************/
         private void RestartClick(object sender, RoutedEventArgs e)
         {
+            //strings for key, plaintext, and ciphertext reset to null
             userKey = null;
             userPlain = null;
             userCipher = null;
+
+            //all text boxes and text blocks are reset to blank contents
             Message.Text = "";
             textKey.Text = "";
             textPlain.Text = "";
@@ -501,16 +523,16 @@ namespace Blowfish
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Exit and close application
         *
-        * Precondition:
+        * Precondition: User clicks Exit -> Exit Program from menu
         *
-        * Postcondition:
+        * Postcondition: Application closes
         *
         ************************************************************************/
-        private void ExitClick(object sender, RoutedEventArgs e)    //exit program code
+        private void ExitClick(object sender, RoutedEventArgs e)
         {
-            Application.Current.Exit();
+            Application.Current.Exit(); //exit program
         }
 
         /**********************************************************************
