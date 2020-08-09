@@ -76,7 +76,7 @@ namespace Blowfish
 
         private uint[] P = new uint[18];
 
-        private byte[] key;
+        //private byte[] key;
 
         //these variables can be used by any function in the class
         //they are for accessing input from the user or files the user chooses
@@ -154,7 +154,7 @@ namespace Blowfish
                 StringBuilder sb = new StringBuilder();
                 for (int ii = 0; ii < dataPlain.Length; ii++)
                 {
-                    sb.Append(dataPlain[ii].ToString("x"));
+                    sb.Append(dataPlain[ii].ToString("X"));
                 }
                 //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
                 textCipher.Text = sb.ToString();
@@ -237,6 +237,13 @@ namespace Blowfish
 
                 //uint[] plainData = {0,0,0,0};
                 Message.Text = "done"; //TODO: reverse order, display it, and done.
+                StringBuilder sb1 = new StringBuilder();
+                for (int ii = 0; ii < dataCipher.Length; ii++)
+                {
+                    sb1.Append(dataCipher[ii].ToString("X"));
+                }
+                //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
+                textPlain.Text = sb1.ToString();
                 //need to convert the string back to ascii here to display
             }
             else
