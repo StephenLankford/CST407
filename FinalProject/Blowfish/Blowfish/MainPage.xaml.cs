@@ -107,37 +107,25 @@ namespace Blowfish
         ************************************************************************/
         private void EncryptClick(object sender, RoutedEventArgs e)
         {
-            //TODO: Encrypt program logic here
+          //TODO: Encrypt program logic here
             //Suggestion: have user enter a key in the main menu for both
             //encryption and decryption.
             //Left side of data to be encrypted = L,
             //Right side = R.
             //TODO: find a way to generate an 18 uint32 array randomly using digits of pi (this is P)
             //TODO: figure out how user can enter data, and how it can be used in this function.
-            //f is a function, x being the input to it. The function is on the following line
-            //uint32_t h = S[0][x >> 24] + S[1][x >> 16 & 0xff];
-            //return (h ^ S[2][x >> 8 & 0xff]) + S[3][x & 0xff]
-            //for (int ii = 0; ii < 16; ii += 2)
-            //{
-            //    L ^= P[ii];
-            //    R ^= f(L);
-            //    R ^= P[ii + 1];
-            //    L ^= f(R);
-            //}
-            //L ^= P[16];
-            //R ^= P[17];
-            //swap L and R  herefdsaf
-            if (userPlain != null || userPlain.Length != 0)
+
+            if ((userPlain != null || userPlain.Length != 0) && keys_generated)
             {
                 byte[] userPlainBytes= {0};
                 if (userPlain.Length % 8 != 0)
                 {
-                    userPlainBytes = new byte [userPlain.Length + (userPlain.Length % 8)];
-                    userPlainBytes= Encoding.ASCII.GetBytes(userPlain);
-                    for (int ii = 0; ii < userPlain.Length % 8, != 0)
-                    {
-                        userPlainBytes[userPlain.Length + ii] = 0;
-                    }
+                    userPlainBytes = new byte[userPlain.Length + (8 - userPlain.Length % 8)];
+                    Encoding.ASCII.GetBytes(userPlain).CopyTo(userPlainBytes,0);
+                   // for (int ii = 0; ii < userPlain.Length % 8; ii++)
+                    //{
+                      //  userPlainBytes[userPlain.Length + ii] = 0;
+                    //}
                 }
                 else 
                 {
@@ -146,21 +134,27 @@ namespace Blowfish
                 }
                 uint[] dataPlain = new uint [(userPlainBytes.Length)/4];
                 int jj = 0;
-                for (int ii = 0, ii < dataPlain.Length; ii += 4, jj++)
+                for (int ii = 0; jj < dataPlain.Length; ii += 4, jj++)
                 {
-                    dataPlain[jj] = BitConverter.ToUInt32 (userPlainBytes[jj], ii);
+                    dataPlain[jj] = BitConverter.ToUInt32 (userPlainBytes, ii);
                 }
                 for (int ii = 0; ii < dataPlain.Length/2; ii +=2)
                 {
                     unsafe
                     {
-                        uint * L = dataPlain[ii];
-                        uint * R = dataPlain[ii+1];
-                    
-                        Encipher(L, R);
+
+                        //fixed (uint* L = &dataPlain[ii], uint* R = &dataPlain[ii + 1]) { Encipher(L, R)};
+                        //fixed () {};
+                        fixed (uint* L = &dataPlain[ii])
+                        { Encipher(L, L + 1); }
+
+                                 // ;
                     }
                 }
                 //uint[] plainData = {0,0,0,0};
+                string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
+                textCipher.Text = joined;
+               
             }
             else
             {
@@ -179,7 +173,7 @@ namespace Blowfish
         ************************************************************************/
         private void DecryptClick(object sender, RoutedEventArgs e)
         {
-            //TODO: Decrypt program logic here
+           //TODO: Decrypt program logic here
             //same issues apply in the encrypt function with the p array, f, and user input
             //for (int ii = 0; ii < 16; ii += 2)
             //{
@@ -191,6 +185,49 @@ namespace Blowfish
             //L ^= P[1];
             //R ^= P[0];
             //swap L and R
+            if ((userCipher != null || userCipher.Length != 0) && keys_generated)
+            {
+                byte[] userCipherBytes = { 0 };
+                if (userCipher.Length % 8 != 0)
+                {
+                    userCipherBytes = new byte[userCipher.Length + (8 - userCipher.Length % 8)];
+                    Encoding.ASCII.GetBytes(userCipher).CopyTo(userCipherBytes, 0);
+                    // for (int ii = 0; ii < userPlain.Length % 8; ii++)
+                    //{
+                    //  userPlainBytes[userPlain.Length + ii] = 0;
+                    //}
+                }
+                else
+                {
+                    userCipherBytes = new byte[userPlain.Length];
+                    userCipherBytes = Encoding.ASCII.GetBytes(userPlain);
+                }
+                uint[] dataCipher = new uint[(userCipherBytes.Length) / 4];
+                int jj = 0;
+                for (int ii = 0; jj < dataCipher.Length; ii += 4, jj++)
+                {
+                    dataCipher[jj] = BitConverter.ToUInt32(userCipherBytes, ii);
+                }
+                for (int ii = 0; ii < dataCipher.Length / 2; ii += 2)
+                {
+                    unsafe
+                    {
+
+                        //fixed (uint* L = &dataPlain[ii], uint* R = &dataPlain[ii + 1]) { Encipher(L, R)};
+                        //fixed () {};
+                        fixed (uint* L = &dataCipher[ii])
+                        { Decipher(L, L + 1); }
+                    }
+                }
+
+                //uint[] plainData = {0,0,0,0};
+                Message.Text = "done";
+                //need to convert the string back to ascii here to display
+            }
+            else
+            {
+                Message.Text = "ERROR: The plaintext entry must be greater than or equal to 1 character long!!!";
+            }
         }
 
         /**********************************************************************
@@ -218,7 +255,7 @@ namespace Blowfish
                 data = 0x0;
                 for (int kk = 0; kk < 4; kk++)
                 {
-                    data = (data << 8) | key[jj];
+                    data = (data << 8) | userByteKey[jj];
                     jj++;
                     if (jj >= userByteKey.Length)
                     {
@@ -350,6 +387,7 @@ namespace Blowfish
             {
                 Message.Text = "MESSAGE: Key Accepted!";    //notify user that key was valid
                 KeysExpansion();
+                keys_generated = true;
             }
         }
 
@@ -374,6 +412,7 @@ namespace Blowfish
             else
             {
                 Message.Text = "MESSAGE: Plaintext Accepted!";  //notify user that plaintext was valid
+                //EncryptClick();
             }
         }
 
@@ -398,6 +437,7 @@ namespace Blowfish
             else
             {
                 Message.Text = "MESSAGE: Ciphertext Accepted!";     //notify user that ciphertext was valid
+                //DecryptClick();
             }
         }
 
