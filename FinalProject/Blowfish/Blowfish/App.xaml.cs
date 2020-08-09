@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.ViewManagement;
 
 namespace Blowfish
 {
@@ -70,6 +71,26 @@ namespace Blowfish
                 }
                 // Ensure the current window is active
                 Window.Current.Activate();
+
+                // using Windows.UI.ViewManagement;
+
+                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+
+                // Set active window colors
+                titleBar.ForegroundColor = Windows.UI.Colors.White;
+                titleBar.BackgroundColor = Windows.UI.Colors.Green;
+                titleBar.ButtonForegroundColor = Windows.UI.Colors.White;
+                titleBar.ButtonBackgroundColor = Windows.UI.Colors.SeaGreen;
+                titleBar.ButtonHoverForegroundColor = Windows.UI.Colors.White;
+                titleBar.ButtonHoverBackgroundColor = Windows.UI.Colors.DarkSeaGreen;
+                titleBar.ButtonPressedForegroundColor = Windows.UI.Colors.Gray;
+                titleBar.ButtonPressedBackgroundColor = Windows.UI.Colors.LightGreen;
+
+                // Set inactive window colors
+                titleBar.InactiveForegroundColor = Windows.UI.Colors.Gray;
+                titleBar.InactiveBackgroundColor = Windows.UI.Colors.SeaGreen;
+                titleBar.ButtonInactiveForegroundColor = Windows.UI.Colors.Gray;
+                titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.SeaGreen;
             }
         }
 

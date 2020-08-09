@@ -151,9 +151,13 @@ namespace Blowfish
                                  // ;
                     }
                 }
-                //uint[] plainData = {0,0,0,0};
-                string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
-                textCipher.Text = joined;
+                StringBuilder sb = new StringBuilder();
+                for (int ii = 0; ii < dataPlain.Length; ii++)
+                {
+                    sb.Append(dataPlain[ii].ToString("x"));
+                }
+                //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
+                textCipher.Text = sb.ToString();
                
             }
             else
@@ -185,28 +189,39 @@ namespace Blowfish
             //L ^= P[1];
             //R ^= P[0];
             //swap L and R
-            if ((userCipher != null || userCipher.Length != 0) && keys_generated)
+            if (userCipher != null && userCipher.Length != 0 && keys_generated)
             {
-                byte[] userCipherBytes = { 0 };
-                if (userCipher.Length % 8 != 0)
+                //byte[] userCipherBytes = { 0 };
+                //if (userCipher.Length % 8 != 0)
+                //{
+                //    userCipherBytes = new byte[userCipher.Length + (8 - userCipher.Length % 8)];
+                //    Encoding.ASCII.GetBytes(userCipher).CopyTo(userCipherBytes, 0);
+                //    // for (int ii = 0; ii < userPlain.Length % 8; ii++)
+                //    //{
+                //    //  userPlainBytes[userPlain.Length + ii] = 0;
+                //    //}
+                //}
+                //else
+                //{
+                //    userCipherBytes = new byte[userPlain.Length];
+                //    userCipherBytes = Encoding.ASCII.GetBytes(userPlain);
+                //}
+                //uint[] dataCipher = new uint[(userCipherBytes.Length) / 4];
+                //int jj = 0;
+                //for (int ii = 0; jj < dataCipher.Length; ii += 4, jj++)
+                //{
+                //    dataCipher[jj] = BitConverter.ToUInt32(userCipherBytes, ii);
+                //}
+                uint[] dataCipher = new uint[userCipher.Length / 8];
+                StringBuilder sb = new StringBuilder();
+                for (int ii = 0; ii < dataCipher.Length; ii++)
                 {
-                    userCipherBytes = new byte[userCipher.Length + (8 - userCipher.Length % 8)];
-                    Encoding.ASCII.GetBytes(userCipher).CopyTo(userCipherBytes, 0);
-                    // for (int ii = 0; ii < userPlain.Length % 8; ii++)
-                    //{
-                    //  userPlainBytes[userPlain.Length + ii] = 0;
-                    //}
-                }
-                else
-                {
-                    userCipherBytes = new byte[userPlain.Length];
-                    userCipherBytes = Encoding.ASCII.GetBytes(userPlain);
-                }
-                uint[] dataCipher = new uint[(userCipherBytes.Length) / 4];
-                int jj = 0;
-                for (int ii = 0; jj < dataCipher.Length; ii += 4, jj++)
-                {
-                    dataCipher[jj] = BitConverter.ToUInt32(userCipherBytes, ii);
+                    for (int jj = ii*8; jj < ii*8 + 8; jj++)
+                    {
+                        sb.Append(userCipher[jj]);
+                    }
+                    dataCipher[ii] = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
+                    sb.Remove(0, 8);
                 }
                 for (int ii = 0; ii < dataCipher.Length / 2; ii += 2)
                 {
@@ -221,7 +236,7 @@ namespace Blowfish
                 }
 
                 //uint[] plainData = {0,0,0,0};
-                Message.Text = "done";
+                Message.Text = "done"; //TODO: reverse order, display it, and done.
                 //need to convert the string back to ascii here to display
             }
             else
