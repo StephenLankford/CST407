@@ -127,6 +127,46 @@ namespace Blowfish
             //L ^= P[16];
             //R ^= P[17];
             //swap L and R  herefdsaf
+            if (userPlain != null || userPlain.Length != 0)
+            {
+                byte[] userPlainBytes= {0};
+                if (userPlain.Length % 8 != 0)
+                {
+                    userPlainBytes = new byte [userPlain.Length + (userPlain.Length % 8)];
+                    userPlainBytes= Encoding.ASCII.GetBytes(userPlain);
+                    for (int ii = 0; ii < userPlain.Length % 8, != 0)
+                    {
+                        userPlainBytes[userPlain.Length + ii] = 0;
+                    }
+                }
+                else 
+                {
+                    userPlainBytes = new byte[userPlain.Length];
+                    userPlainBytes= Encoding.ASCII.GetBytes(userPlain);
+                }
+                uint[] dataPlain = new uint [(userPlainBytes.Length)/4];
+                int jj = 0;
+                for (int ii = 0, ii < dataPlain.Length; ii += 4, jj++)
+                {
+                    dataPlain[jj] = BitConverter.ToUInt32 (userPlainBytes[jj], ii);
+                }
+                for (int ii = 0; ii < dataPlain.Length/2; ii +=2)
+                {
+                    unsafe
+                    {
+                        uint * L = dataPlain[ii];
+                        uint * R = dataPlain[ii+1];
+                    
+                        Encipher(L, R);
+                    }
+                }
+                //uint[] plainData = {0,0,0,0};
+            }
+            else
+            {
+                Message.Text = "ERROR: The plaintext entry must be greater than or equal to 1 character long!!!";
+            }
+
         }
 
         /**********************************************************************
@@ -161,7 +201,7 @@ namespace Blowfish
         * Postcondition:
         *
         ************************************************************************/
-        private void KeysClick(object sender, RoutedEventArgs e)
+        private void KeysExpansion()
         {
             uint data = 0x0;
             S0 = SetupS0();
@@ -169,24 +209,9 @@ namespace Blowfish
             S2 = SetupS2();
             S3 = SetupS2();
             int jj = 0;
-
-          
-            //however we access the text field, ill call it userKey
-            //byte[] userKey = {0};//text input placeholder~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            if (userKey != null)
-            {
-                byte[] userByteKey = Encoding.ASCII.GetBytes(userKey);
-            }
-            else
-            {
-                return;
-            }
-            while (userKey.Length > 56)
-            { 
-                //key can't be >56, re enter key
-            }
-            
-            key = new byte[userKey.Length];
+           
+            byte[] userByteKey = Encoding.ASCII.GetBytes(userKey);
+            //key = new byte[userKey.Length];
 
             for (int ii = 0; ii < 18; ii++)
             {
@@ -195,7 +220,7 @@ namespace Blowfish
                 {
                     data = (data << 8) | key[jj];
                     jj++;
-                    if (jj >= userKey.Length)
+                    if (jj >= userByteKey.Length)
                     {
                         jj = 0;
                     }
@@ -205,17 +230,17 @@ namespace Blowfish
             uint dataL = 0;
             uint dataR = 0;
 
-            //for (int ii = 0; ii < 18; ii += 2)
-            //{
-            //    unsafe
-            //    {
-            //        Encipher(&dataL, &dataR);
-            //    }
-            //    P[ii] = dataL;
-            //    P[ii + 1] = dataR;
-            //}
+            for (int ii = 0; ii < 18; ii += 2)
+            {
+                unsafe
+                {
+                    Encipher(&dataL, &dataR);
+                }
+                P[ii] = dataL;
+                P[ii + 1] = dataR;
+            }
 
-          
+
             for (int cc = 0; cc < 256; cc += 2)
             {
                 S0[cc] = dataL;
@@ -324,6 +349,7 @@ namespace Blowfish
             else
             {
                 Message.Text = "MESSAGE: Key Accepted!";    //notify user that key was valid
+                KeysExpansion();
             }
         }
 
@@ -413,6 +439,7 @@ namespace Blowfish
             else
             {   //notify user that key from file is good so they can proceed
                 Message.Text = "MESSAGE: Key Accepted!";
+                KeysExpansion();
             }
         }
 
@@ -764,19 +791,29 @@ namespace Blowfish
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Provide general info and assistance to user for better UX
         *
-        * Precondition:
+        * Precondition: User clicks Help->About
         *
-        * Postcondition:
+        * Postcondition: Dialogue box displayed for user to read, user can click
+        *               'Ok' to or 'X' in the upper right corner of the dialogue
+        *               box to close it
         *
         ************************************************************************/
         private async void HelpClick(object sender, RoutedEventArgs e)  //help menu code
         {
             ContentDialog aboutDialog = new ContentDialog()
             {
-                Title = "About Blowfish",
-                Content = "Authors: Hayden Hutsell and Stephen Lankford, Summer 2020",
+                Title = "Blowfish by Hayden Hutsell and Stephen Lankford\n" +
+                        "Original Blowfish algorithm created by Bruce Schneier",
+                Content = "The Key, Plaintext, and Ciphertext can be entered into the labeled text boxes.\n" +
+                    "The Key, Plaintext, and Cipherteext can also be imported from a text file.\n" +
+                    "If encrypting, a valid key must be imported/entered along with plaintext, then select Encrypt->Start.\n" +
+                    "If decrypting, a valid key must be imported/entered along with ciphertext, then select Decrypt->Start.\n" +
+                    "Select Reset->Restart Program to wipe the application and start over without having to reopen the program.\n" +
+                    "Select Exit->Close Program to end the application.\n" +
+                    "Select Help->About to view the help dialog box, which contains information about the program and its use.\n\n" +
+                    "Image Citation: [1]B. Schneier, Applied Cryptography: Protocols, Algorithms and Source Code in C 20th Anniv. John Wiley & Sons, 2015, p. 337.",
                 CloseButtonText = "Ok"
             };
             await aboutDialog.ShowAsync();
