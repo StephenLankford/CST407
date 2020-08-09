@@ -74,7 +74,7 @@ namespace Blowfish
         private uint[] S2;
         private uint[] S3; //S boxes
 
-        private uint[] P;
+        private uint[] P = new uint[18];
 
         private byte[] key;
 
