@@ -107,7 +107,7 @@ namespace Blowfish
         ************************************************************************/
         private void EncryptClick(object sender, RoutedEventArgs e)
         {
-          //TODO: Encrypt program logic here
+            //TODO: Encrypt program logic here
             //Suggestion: have user enter a key in the main menu for both
             //encryption and decryption.
             //Left side of data to be encrypted = L,
@@ -117,28 +117,28 @@ namespace Blowfish
 
             if ((userPlain != null || userPlain.Length != 0) && keys_generated)
             {
-                byte[] userPlainBytes= {0};
+                byte[] userPlainBytes = { 0 };
                 if (userPlain.Length % 8 != 0)
                 {
-                    userPlainBytes = new byte[userPlain.Length + (8 - userPlain.Length % 8)];
-                    Encoding.ASCII.GetBytes(userPlain).CopyTo(userPlainBytes,0);
-                   // for (int ii = 0; ii < userPlain.Length % 8; ii++)
-                    //{
-                      //  userPlainBytes[userPlain.Length + ii] = 0;
-                    //}
+                    userPlainBytes = new byte[userPlain.Length + (8 - (userPlain.Length % 8))];
+                    Encoding.ASCII.GetBytes(userPlain).CopyTo(userPlainBytes, 0);
+                     for (int ii = 0; ii < 8 - (userPlain.Length % 8); ii++)
+                    {
+                      userPlainBytes[userPlain.Length + ii] = 0;
+                    }
                 }
-                else 
+                else
                 {
                     userPlainBytes = new byte[userPlain.Length];
-                    userPlainBytes= Encoding.ASCII.GetBytes(userPlain);
+                    userPlainBytes = Encoding.ASCII.GetBytes(userPlain);
                 }
-                uint[] dataPlain = new uint [(userPlainBytes.Length)/4];
+                uint[] dataPlain = new uint[(userPlainBytes.Length) / 4];
                 int jj = 0;
                 for (int ii = 0; jj < dataPlain.Length; ii += 4, jj++)
                 {
-                    dataPlain[jj] = BitConverter.ToUInt32 (userPlainBytes, ii);
+                    dataPlain[jj] = BitConverter.ToUInt32(userPlainBytes, ii);
                 }
-                for (int ii = 0; ii < dataPlain.Length/2; ii +=2)
+                for (int ii = 0; ii < dataPlain.Length; ii += 2)
                 {
                     unsafe
                     {
@@ -148,7 +148,7 @@ namespace Blowfish
                         fixed (uint* L = &dataPlain[ii])
                         { Encipher(L, L + 1); }
 
-                                 // ;
+                        // ;
                     }
                 }
                 StringBuilder sb = new StringBuilder();
@@ -158,7 +158,7 @@ namespace Blowfish
                 }
                 //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
                 textCipher.Text = sb.ToString();
-               
+
             }
             else
             {
@@ -177,7 +177,7 @@ namespace Blowfish
         ************************************************************************/
         private void DecryptClick(object sender, RoutedEventArgs e)
         {
-           //TODO: Decrypt program logic here
+            //TODO: Decrypt program logic here
             //same issues apply in the encrypt function with the p array, f, and user input
             //for (int ii = 0; ii < 16; ii += 2)
             //{
@@ -213,17 +213,18 @@ namespace Blowfish
                 //    dataCipher[jj] = BitConverter.ToUInt32(userCipherBytes, ii);
                 //}
                 uint[] dataCipher = new uint[userCipher.Length / 8];
+                byte[] characterArray = new byte[4];
                 StringBuilder sb = new StringBuilder();
                 for (int ii = 0; ii < dataCipher.Length; ii++)
                 {
-                    for (int jj = ii*8; jj < ii*8 + 8; jj++)
+                    for (int jj = ii * 8; jj < ii * 8 + 8; jj++)
                     {
                         sb.Append(userCipher[jj]);
                     }
                     dataCipher[ii] = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
                     sb.Remove(0, 8);
                 }
-                for (int ii = 0; ii < dataCipher.Length / 2; ii += 2)
+                for (int ii = 0; ii < dataCipher.Length; ii += 2)
                 {
                     unsafe
                     {
@@ -234,13 +235,17 @@ namespace Blowfish
                         { Decipher(L, L + 1); }
                     }
                 }
-
+                
                 //uint[] plainData = {0,0,0,0};
                 Message.Text = "done"; //TODO: reverse order, display it, and done.
                 StringBuilder sb1 = new StringBuilder();
                 for (int ii = 0; ii < dataCipher.Length; ii++)
                 {
-                    sb1.Append(dataCipher[ii].ToString("X"));
+                    characterArray = BitConverter.GetBytes(dataCipher[ii]);
+                    characterArray.Reverse();
+                    sb1.Append(System.Text.Encoding.ASCII.GetString(characterArray));
+                    //sb1.Append(dataCipher[ii]);
+
                 }
                 //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
                 textPlain.Text = sb1.ToString();
@@ -302,6 +307,10 @@ namespace Blowfish
 
             for (int cc = 0; cc < 256; cc += 2)
             {
+                unsafe
+                {
+                    Encipher(&dataL, &dataR);
+                }
                 S0[cc] = dataL;
                 S0[cc + 1] = dataR;
                 S1[cc] = dataL;
