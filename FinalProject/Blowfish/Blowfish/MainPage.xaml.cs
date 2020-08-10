@@ -9,6 +9,7 @@
  *                              as Sbox config, and P array config. Next is decipher, dec, and enc. (easy)(edit: wasn't easy)
  *                08/08/2020 - changed logo, finished program
  *                08/09/2020 - reversed endian to be readable, debugged, finished documentation
+ *                08/10/2020 - added text file saving buttons
  ***************************************************************************************************************/
 
 /****************************************************************************************************************
@@ -48,6 +49,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Storage.Provider;
+using Windows.Storage;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -81,6 +84,9 @@ namespace Blowfish
         *   private async void FileKeyClick(object sender, RoutedEventArgs e) - tied to Upload key from text file button, validates input from file and stores in text box
         *   private async void FilePlainClick(object sender, RoutedEventArgs e) - tied to Upload plaintext from text file button, validates input from file and stores in text box
         *   private async void FileCipherClick(object sender, RoutedEventArgs e) - tied to Upload ciphertext from text file button, validates input from file and stores in text box
+        *   private async void SaveKeyClick(object sender, RoutedEventArgs e) - save key in text box to .txt file
+        *   private async void SavePlainClick(object sender, RoutedEventArgs e) - save plaintext in text box to .txt file
+        *   private async void SaveCipherClick(object sender, RoutedEventArgs e) - save ciphertext in text box to .txt file
         *   private void RestartClick(object sender, RoutedEventArgs e) - resets variables and text boxes for fresh start
         *   private void ExitClick(object sender, RoutedEventArgs e) - exits the current application
         *   private uint[] SetupS1() - initializes s-box 1
@@ -180,7 +186,7 @@ namespace Blowfish
                 }
                 //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
                 textCipher.Text = sb.ToString();
-
+                Message.Text = "MESSAGE: Encryption complete!";
             }
             else
             {
@@ -259,7 +265,7 @@ namespace Blowfish
                 }
                 
                 //uint[] plainData = {0,0,0,0};
-                Message.Text = "done"; //TODO: reverse order, display it, and done.
+                Message.Text = "MESSAGE: Decryption complete!"; //TODO: reverse order, display it, and done.
                 StringBuilder sb1 = new StringBuilder();
                 for (int ii = 0; ii < dataCipher.Length; ii++)
                 {
@@ -617,6 +623,84 @@ namespace Blowfish
             else
             {   //notify user that ciphertext from file is good so they can proceed
                 Message.Text = "MESSAGE: Ciphertext Accepted!";
+            }
+        }
+
+        /**********************************************************************
+        * Purpose: Save key in key text box to a text file
+        *
+        * Precondition: text in key text box, user clicks Save Key button
+        *
+        * Postcondition: key saved in text file
+        *
+        ************************************************************************/
+        private async void SaveKeyClick(object sender, RoutedEventArgs e)
+        {
+            if (textKey.Text != "") //if the text box is not empty...
+            {
+                var savePicker = new Windows.Storage.Pickers.FileSavePicker();  //create file picker object for saving
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;  //start in Windows Documents
+                savePicker.FileTypeChoices.Add("Plain Text", new List<string>() { ".txt" });    //set file to save as text file
+                savePicker.SuggestedFileName = "New Key";   //starting file name
+                Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();    //get file saving object
+                await Windows.Storage.FileIO.WriteTextAsync(file, textKey.Text);    //write text to file
+                Message.Text = "MESSAGE: Key saved to text file!";
+            }
+            else
+            {
+                Message.Text = "ERROR: Key textbox is empty! No file to save.";
+            }
+        }
+
+        /**********************************************************************
+        * Purpose: Save plaintext in plaintext text box to a text file
+        *
+        * Precondition: text in plaintext text box, user clicks Save Plaintext button
+        *
+        * Postcondition: Plaintext saved in text file
+        *
+        ************************************************************************/
+        private async void SavePlainClick(object sender, RoutedEventArgs e)
+        {
+            if (textPlain.Text != "")   //if the text box is not empty...
+            {
+                var savePicker = new Windows.Storage.Pickers.FileSavePicker();  //create file picker object for saving
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;  //start in Windows Documents
+                savePicker.FileTypeChoices.Add("Plain Text", new List<string>() { ".txt" });    //set file to save as text file
+                savePicker.SuggestedFileName = "New Plaintext";     //starting file name
+                Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();    //get file saving object
+                await Windows.Storage.FileIO.WriteTextAsync(file, textPlain.Text);
+                Message.Text = "MESSAGE: Plaintext saved to text file!";
+            }
+            else
+            {
+                Message.Text = "ERROR: Plaintext textbox is empty! No file to save.";
+            }
+        }
+
+        /**********************************************************************
+        * Purpose: Save ciphertext in ciphertext text box to a text file
+        *
+        * Precondition: text in ciphertext text box, user clicks Save Ciphertext button
+        *
+        * Postcondition: ciphertext save in text file
+        *
+        ************************************************************************/
+        private async void SaveCipherClick(object sender, RoutedEventArgs e)
+        {
+            if (textCipher.Text != "")  //if the text box is not empty...
+            {
+                var savePicker = new Windows.Storage.Pickers.FileSavePicker();  //create file picker object for saving
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;  //start in Windows Documents
+                savePicker.FileTypeChoices.Add("Plain Text", new List<string>() { ".txt" });    //set file to save as text file
+                savePicker.SuggestedFileName = "New Ciphertext";    //starting file name
+                Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();    //get file saving object
+                await Windows.Storage.FileIO.WriteTextAsync(file, textCipher.Text);     //write text to file
+                Message.Text = "MESSAGE: Ciphertext saved to text file!";
+            }
+            else
+            {
+                Message.Text = "ERROR: Ciphertext textbox is empty! No file to save.";
             }
         }
 
