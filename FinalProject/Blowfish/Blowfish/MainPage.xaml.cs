@@ -6,7 +6,9 @@
  *                08/06/2020 - coded some encryption/decryption logic
  *                08/07/2020 - finished basic GUI design and functionality in XAML, 
  *                08/07/2020 - implemented encipher, key generation from book written by blowfish creator as well
- *                              as Sbox config, and P array config. Next is decipher, dec, and enc. (easy)
+ *                              as Sbox config, and P array config. Next is decipher, dec, and enc. (easy)(edit: wasn't easy)
+ *                08/08/2020 - changed logo, finished program
+ *                08/09/2020 - reversed endian to be readable, debugged, finished documentation
  ***************************************************************************************************************/
 
 /****************************************************************************************************************
@@ -57,15 +59,35 @@ namespace Blowfish
     public sealed partial class MainPage : Page
     {
         /************************************************************************
-        * Class: 
+        * Class: MainPage
         *
-        * Purpose: 
+        * Purpose: Detect buttons and menu key clicks and perform actions based on those clicks.
+        *          Click actions set in motion the Blowfish Cipher and its algorithm components.
+        *          Plaintext is encrypted with a key and that same key decrypts ciphertext.
         *
         * Manager functions:
-        * 
+        *           NA
         *
         * Methods:
-        * 
+        *   private void EncryptClick(object sender, RoutedEventArgs e) - tied to Encrypt -> Start, breaks apart text for binary/byte manipulation, calls Encipher()
+        *   private void DecryptClick(object sender, RoutedEventArgs e) - tied to Decrypt -> Start, breaks apart text for binary/byte manipulation, calls Decipher()
+        *   private void KeysExpansion() - Creates the S Boxes and P array from the user key
+        *   private unsafe void Encipher(uint* dataL, uint* dataR) - encrypts data
+        *   private unsafe void Decipher(uint* dataL, uint* dataR) - decrypts data
+        *   private uint FFunction(uint dataInput) - f function from blowfish algorithm
+        *   private void AcceptKeyClick(object sender, RoutedEventArgs e) - tied to key accept button, validates input in key text box
+        *   private void AcceptPlainClick (object sender, RoutedEventArgs e) - tied to plaintext accept button, validates input in plaintext text box
+        *   private void AcceptCipherClick (object sender, RoutedEventArgs e) - tied to ciphertext accept button, validates input in ciphertext text box
+        *   private async void FileKeyClick(object sender, RoutedEventArgs e) - tied to Upload key from text file button, validates input from file and stores in text box
+        *   private async void FilePlainClick(object sender, RoutedEventArgs e) - tied to Upload plaintext from text file button, validates input from file and stores in text box
+        *   private async void FileCipherClick(object sender, RoutedEventArgs e) - tied to Upload ciphertext from text file button, validates input from file and stores in text box
+        *   private void RestartClick(object sender, RoutedEventArgs e) - resets variables and text boxes for fresh start
+        *   private void ExitClick(object sender, RoutedEventArgs e) - exits the current application
+        *   private uint[] SetupS1() - initializes s-box 1
+        *   private uint[] SetupS2() - initializes s-box 2
+        *   private uint[] SetupS3() - initializes s-box 3
+        *   private async void HelpClick(object sender, RoutedEventArgs e) - contains contents of help for user and content dialog box
+        *   
         *************************************************************************/
 
         private bool keys_generated = false;
@@ -98,11 +120,11 @@ namespace Blowfish
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Runs when encrypt is clicked, runs the encryption algorithm
         *
-        * Precondition:
+        * Precondition: Encryption is clicked
         *
-        * Postcondition:
+        * Postcondition: The encrypted string is output to ciphertext text box
         *
         ************************************************************************/
         private void EncryptClick(object sender, RoutedEventArgs e)
@@ -168,11 +190,11 @@ namespace Blowfish
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Runs when decrypt is clicked, runs the decryption algorithm
         *
-        * Precondition:
+        * Precondition: decryption is clicked
         *
-        * Postcondition:
+        * Postcondition: The decrypted string is output to plaintext text box
         *
         ************************************************************************/
         private void DecryptClick(object sender, RoutedEventArgs e)
@@ -258,11 +280,11 @@ namespace Blowfish
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Creates the S Boxes and P array from the user key
         *
-        * Precondition:
+        * Precondition: AcceptKey is initiated, and the key is valid
         *
-        * Postcondition:
+        * Postcondition: S boxes and p array is initialized for en/decrypting
         *
         ************************************************************************/
         private void KeysExpansion()
@@ -324,11 +346,12 @@ namespace Blowfish
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Encrypts a block of data (a uint32)
         *
-        * Precondition:
+        * Precondition: is called from encrypt click and key expansion
         *
-        * Postcondition:
+        * Postcondition: runs the feister network encryption algorithm, dataL and
+        *               dataR are modified (passed by reference)
         *
         ************************************************************************/
         private unsafe void Encipher(uint* dataL, uint* dataR) //COME BACK TO ADDRESS UNSAFE keyword
@@ -382,11 +405,11 @@ namespace Blowfish
 
         }
         /**********************************************************************
-        * Purpose: 
+        * Purpose: Performs the F function defined in blowfish/feister networks
         *
-        * Precondition:
+        * Precondition: Is called from decrypt and encrypt
         *
-        * Postcondition:
+        * Postcondition:returns the result of the f function
         *
         ************************************************************************/
         private uint FFunction(uint dataInput)
@@ -635,9 +658,9 @@ namespace Blowfish
         }
 
         /**********************************************************************
-        * Purpose: 
+        * Purpose: the sboxes derived from digits of pi.
         *
-        * Precondition:
+        * Precondition: is called from key expansion.
         *
         * Postcondition:
         *
