@@ -154,7 +154,7 @@ namespace Blowfish
                 StringBuilder sb = new StringBuilder();
                 for (int ii = 0; ii < dataPlain.Length; ii++)
                 {
-                    sb.Append(dataPlain[ii].ToString("X"));
+                    sb.Append(dataPlain[ii].ToString("X8"));
                 }
                 //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
                 textCipher.Text = sb.ToString();
@@ -273,6 +273,7 @@ namespace Blowfish
             S2 = SetupS2();
             S3 = SetupS2();
             int jj = 0;
+            P = new uint[18];
            
             byte[] userByteKey = Encoding.ASCII.GetBytes(userKey);
             //key = new byte[userKey.Length];
