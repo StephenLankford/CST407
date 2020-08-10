@@ -41,9 +41,19 @@
         </MenuBar>
 
         <TextBlock Grid.Row="2" VerticalAlignment="Top" FontSize="24" Foreground="DarkSlateBlue" HorizontalAlignment="Center" Padding="15">
-            Blowfish [See image source in Help->About]
+            Blowfish [1]
         </TextBlock>
         <Image Source="Assets/BlowfishImage.png" Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Height="550" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+        <TextBlock Grid.Column="1" Grid.Row="2" VerticalAlignment="Top" FontSize="24" Foreground="DarkSlateBlue" HorizontalAlignment="Center" Padding="15">
+            F Function [1]
+        </TextBlock>
+        <Image Source="Assets/ffunction.png" Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" Height="500" Width="500" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="100,144,0,0"/>
+
+        <TextBlock Grid.Column="2" Grid.Row="2" VerticalAlignment="Top" FontSize="24" Foreground="DarkSlateBlue" HorizontalAlignment="Center" Padding="15">
+            Encrypt [1]
+        </TextBlock>
+        <Image Source="Assets/Encrypt.png" Grid.Column="2" Grid.Row="2" Grid.RowSpan="2" Height="450" Width="450" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,157,0,0"/>
 
         <TextBlock Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Height="40" Grid.ColumnSpan="3" 
                    Name="Message" Foreground="Firebrick" FontSize="20" FontFamily="Times New Roman"/>

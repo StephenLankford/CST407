@@ -143,28 +143,28 @@ namespace Blowfish
             //TODO: find a way to generate an 18 uint32 array randomly using digits of pi (this is P)
             //TODO: figure out how user can enter data, and how it can be used in this function.
 
-            if ((userPlain != null || userPlain.Length != 0) && keys_generated)
+            if ((userPlain != null || userPlain.Length != 0) && keys_generated) //if the keys have been generated and there is text to decrypt
             {
                 byte[] userPlainBytes = { 0 };
-                if (userPlain.Length % 8 != 0)
+                if (userPlain.Length % 8 != 0) //if not padded to 64 bits
                 {
-                    userPlainBytes = new byte[userPlain.Length + (8 - (userPlain.Length % 8))];
-                    Encoding.ASCII.GetBytes(userPlain).CopyTo(userPlainBytes, 0);
+                    userPlainBytes = new byte[userPlain.Length + (8 - (userPlain.Length % 8))]; //make the array padded to 64 bits
+                    Encoding.ASCII.GetBytes(userPlain).CopyTo(userPlainBytes, 0); //take the ascii bytes and put into array
                      for (int ii = 0; ii < 8 - (userPlain.Length % 8); ii++)
                     {
-                      userPlainBytes[userPlain.Length + ii] = 0;
+                      userPlainBytes[userPlain.Length + ii] = 0; //pad with zeroes
                     }
                 }
-                else
+                else //just slap the plaintext into the array
                 {
                     userPlainBytes = new byte[userPlain.Length];
                     userPlainBytes = Encoding.ASCII.GetBytes(userPlain);
                 }
-                uint[] dataPlain = new uint[(userPlainBytes.Length) / 4];
+                uint[] dataPlain = new uint[(userPlainBytes.Length) / 4]; //each character is a byte, and 32 bits is 4 bytes
                 int jj = 0;
                 for (int ii = 0; jj < dataPlain.Length; ii += 4, jj++)
                 {
-                    dataPlain[jj] = BitConverter.ToUInt32(userPlainBytes, ii);
+                    dataPlain[jj] = BitConverter.ToUInt32(userPlainBytes, ii); //conver the data to a uint 32 for the array
                 }
                 for (int ii = 0; ii < dataPlain.Length; ii += 2)
                 {
@@ -173,7 +173,7 @@ namespace Blowfish
 
                         //fixed (uint* L = &dataPlain[ii], uint* R = &dataPlain[ii + 1]) { Encipher(L, R)};
                         //fixed () {};
-                        fixed (uint* L = &dataPlain[ii])
+                        fixed (uint* L = &dataPlain[ii]) //send ref of L and R, and then do the encipher for every block
                         { Encipher(L, L + 1); }
 
                         // ;
@@ -182,7 +182,7 @@ namespace Blowfish
                 StringBuilder sb = new StringBuilder();
                 for (int ii = 0; ii < dataPlain.Length; ii++)
                 {
-                    sb.Append(dataPlain[ii].ToString("X8"));
+                    sb.Append(dataPlain[ii].ToString("X8"));//take every uint 8, convert it to a string, and represent it as hex, keeping any leading zeroes
                 }
                 //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
                 textCipher.Text = sb.ToString();
@@ -217,7 +217,7 @@ namespace Blowfish
             //L ^= P[1];
             //R ^= P[0];
             //swap L and R
-            if (userCipher != null && userCipher.Length != 0 && keys_generated)
+            if (userCipher != null && userCipher.Length != 0 && keys_generated) //if the keys have been generated and there is data to decrypt
             {
                 //byte[] userCipherBytes = { 0 };
                 //if (userCipher.Length % 8 != 0)
@@ -240,16 +240,16 @@ namespace Blowfish
                 //{
                 //    dataCipher[jj] = BitConverter.ToUInt32(userCipherBytes, ii);
                 //}
-                uint[] dataCipher = new uint[userCipher.Length / 8];
-                byte[] characterArray = new byte[4];
+                uint[] dataCipher = new uint[userCipher.Length / 8]; //each character in the decrypt is a nibble, and 8 nibbles are in 4 bytes
+                byte[] characterArray = new byte[4]; //temp array for later
                 StringBuilder sb = new StringBuilder();
-                for (int ii = 0; ii < dataCipher.Length; ii++)
+                for (int ii = 0; ii < dataCipher.Length; ii++) //all this for loop does is convert the ascii to uint
                 {
-                    for (int jj = ii * 8; jj < ii * 8 + 8; jj++)
+                    for (int jj = ii * 8; jj < ii * 8 + 8; jj++) //for every character in the ciphertext box
                     {
                         sb.Append(userCipher[jj]);
                     }
-                    dataCipher[ii] = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
+                    dataCipher[ii] = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber); //takes ascii represented as hex and converts to UINT
                     sb.Remove(0, 8);
                 }
                 for (int ii = 0; ii < dataCipher.Length; ii += 2)
@@ -259,7 +259,7 @@ namespace Blowfish
 
                         //fixed (uint* L = &dataPlain[ii], uint* R = &dataPlain[ii + 1]) { Encipher(L, R)};
                         //fixed () {};
-                        fixed (uint* L = &dataCipher[ii])
+                        fixed (uint* L = &dataCipher[ii]) //runs decipher function sending ref of L and R (address of R = address of L + 1)
                         { Decipher(L, L + 1); }
                     }
                 }
@@ -269,14 +269,14 @@ namespace Blowfish
                 StringBuilder sb1 = new StringBuilder();
                 for (int ii = 0; ii < dataCipher.Length; ii++)
                 {
-                    characterArray = BitConverter.GetBytes(dataCipher[ii]);
-                    characterArray.Reverse();
-                    sb1.Append(System.Text.Encoding.ASCII.GetString(characterArray));
+                    characterArray = BitConverter.GetBytes(dataCipher[ii]); //gets a uint from the decrypted data
+                    characterArray.Reverse(); //reverse it, because byte converter converts to big endian
+                    sb1.Append(System.Text.Encoding.ASCII.GetString(characterArray)); //converts encodes as ascii
                     //sb1.Append(dataCipher[ii]);
 
                 }
                 //string joined = string.Join("", Array.ConvertAll(dataPlain, Convert.ToString));
-                textPlain.Text = sb1.ToString();
+                textPlain.Text = sb1.ToString();//put in the other text box
                 //need to convert the string back to ascii here to display
             }
             else
@@ -360,12 +360,12 @@ namespace Blowfish
         *               dataR are modified (passed by reference)
         *
         ************************************************************************/
-        private unsafe void Encipher(uint* dataL, uint* dataR) //COME BACK TO ADDRESS UNSAFE keyword
-        {
-            uint dataLTemp = *dataL;
-            uint dataRTemp = *dataR;                         //note: unsafe in this case doesn't introduce a glaring security threat
+        private unsafe void Encipher(uint* dataL, uint* dataR) //since c# is made for web based applications,
+        {                                                       //this would be unsafe for them because these 
+            uint dataLTemp = *dataL;                            //data entries could be easily exposed.
+            uint dataRTemp = *dataR;                            //however, this app isn't a web based application.         
             uint temp = 0;
-            for (int ii = 0; ii < 16; ii++)                 //as this data is on the SENDER, so an exposed dataL or dataR isn't the end of the world
+            for (int ii = 0; ii < 16; ii++)                 
             {
                 dataLTemp ^= P[ii];
                 dataRTemp ^= FFunction(dataLTemp);

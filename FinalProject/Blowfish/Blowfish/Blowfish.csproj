@@ -139,6 +139,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\BlowfishImage.png" />
+    <Content Include="Assets\Encrypt.png" />
+    <Content Include="Assets\ffunction.png" />
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-125.png" />
     <Content Include="Assets\LargeTile.scale-150.png" />
